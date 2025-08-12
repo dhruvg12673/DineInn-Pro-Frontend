@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './TipPage.css';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://dineinn-pro-backend.onrender.com';
 
 const TipPage = () => {
   const [tipAmount, setTipAmount] = useState('');

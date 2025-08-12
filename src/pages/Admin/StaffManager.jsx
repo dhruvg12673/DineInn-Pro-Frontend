@@ -2,8 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { Plus, X, Calendar, Clock, Search, Edit, Trash2, Upload } from 'lucide-react';
 import './staff_attendance_css.css';
-import { PlanContext } from './PlanContext';
-import ProtectedRoute from './ProtectedRoute';
 
 const StaffManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,8 +18,9 @@ const StaffManager = () => {
     fullName: '',
     phoneNumber: '',
     email: '',
-    password: '', // Added password field
+    password: '',
     role: '',
+    monthlySalary: '', // <-- ADDED for salary
     staffPhoto: null,
     idCardPhoto: null,
     staffPhotoPreview: null,
@@ -29,7 +28,7 @@ const StaffManager = () => {
   });
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   const fetchStaff = useCallback(async () => {
     if (!restaurantId) return;
@@ -132,7 +131,18 @@ const StaffManager = () => {
       URL.revokeObjectURL(formData.idCardPhotoPreview);
     }
 
-    setFormData({ fullName: '', phoneNumber: '', email: '', password: '', role: '', staffPhoto: null, idCardPhoto: null, staffPhotoPreview: null, idCardPhotoPreview: null });
+    setFormData({
+        fullName: '',
+        phoneNumber: '',
+        email: '',
+        password: '',
+        role: '',
+        monthlySalary: '', // <-- ADDED
+        staffPhoto: null,
+        idCardPhoto: null,
+        staffPhotoPreview: null,
+        idCardPhotoPreview: null
+    });
     setEditingStaff(null);
   };
 
@@ -150,6 +160,7 @@ const StaffManager = () => {
         email: staff.email || '',
         password: '', // Clear password on edit
         role: staff.role || '',
+        monthlySalary: staff.monthly_salary || '', // <-- ADDED
         staffPhoto: null,
         idCardPhoto: null,
         staffPhotoPreview: staff.staffphoto,
@@ -176,15 +187,14 @@ const StaffManager = () => {
         fullname: formData.fullName,
         phonenumber: formData.phoneNumber,
         email: formData.email,
-        password: formData.password, // Include password in payload
+        password: formData.password,
         role: formData.role,
+        monthly_salary: formData.monthlySalary ? parseFloat(formData.monthlySalary) : 0, // <-- ADDED
         staffphoto: formData.staffPhoto ? await fileToBase64(formData.staffPhoto) : (editingStaff ? editingStaff.staffphoto : null),
         idcardphoto: formData.idCardPhoto ? await fileToBase64(formData.idCardPhoto) : (editingStaff ? editingStaff.idcardphoto : null),
       };
       
       if (editingStaff) {
-        // NOTE: The PUT request for editing staff does not update the password or usercredentials in this version.
-        // You might want to create a separate form/endpoint for password changes.
         await axios.put(`${API_BASE_URL}/api/staff/${editingStaff.id}`, payload);
         alert('Staff updated successfully!');
       } else {
@@ -305,13 +315,22 @@ const StaffManager = () => {
             <div><label className="block mb-1 font-medium text-slate-700" htmlFor="fullName">Full Name</label><input type="text" name="fullName" id="fullName" value={formData.fullName} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter full name" required /></div>
             <div><label className="block mb-1 font-medium text-slate-700" htmlFor="phoneNumber">Phone Number</label><input type="tel" name="phoneNumber" id="phoneNumber" value={formData.phoneNumber} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter phone number" /></div>
             
-            {/* Email and Password side-by-side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div><label className="block mb-1 font-medium text-slate-700" htmlFor="email">Email</label><input type="email" name="email" id="email" value={formData.email} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter email address" /></div>
               <div><label className="block mb-1 font-medium text-slate-700" htmlFor="password">Password</label><input type="password" name="password" id="password" value={formData.password} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter password" required={!editingStaff} disabled={!!editingStaff} /></div>
             </div>
 
-            <div><label className="block mb-1 font-medium text-slate-700" htmlFor="role">Role</label><input type="text" name="role" id="role" value={formData.role} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter role (e.g. Manager, Chef)" required /></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="block mb-1 font-medium text-slate-700" htmlFor="role">Role</label>
+                    <input type="text" name="role" id="role" value={formData.role} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g. Manager, Chef" required />
+                </div>
+                <div>
+                    {/* NEW MONTHLY SALARY FIELD */}
+                    <label className="block mb-1 font-medium text-slate-700" htmlFor="monthlySalary">Monthly Salary (₹)</label>
+                    <input type="number" name="monthlySalary" id="monthlySalary" value={formData.monthlySalary} onChange={handleInputChange} className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="e.g. 25000" />
+                </div>
+            </div>
             
             <div className="grid grid-cols-2 gap-4">
                 <div>

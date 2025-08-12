@@ -1,21 +1,18 @@
-import React, { useState, useEffect, useCallback, useContext } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { PlanContext } from '../Admin/PlanContext'; // adjust if needed
-import ProtectedRoute from '../Admin/ProtectedRoute'; // adjust if needed
 import './AttendancePage.css';
 
 const AttendancePage = () => {
   const [staffList, setStaffList] = useState([]);
   const [selectedStaffId, setSelectedStaffId] = useState('');
   const [shift, setShift] = useState('');
-  // This state will hold the active (un-closed) attendance record for the currently selected staff member.
   const [activeRecord, setActiveRecord] = useState(null);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -49,8 +46,6 @@ const AttendancePage = () => {
     fetchAttendanceRecords();
   }, [fetchStaff, fetchAttendanceRecords]);
 
-  // This effect runs whenever the selected staff or the list of records changes.
-  // It checks if the selected person has an open session.
   useEffect(() => {
     if (selectedStaffId) {
       const openRecord = attendanceRecords.find(
@@ -83,16 +78,16 @@ const AttendancePage = () => {
     }
     setIsLoading(true);
     try {
+      // ✅ FIX: Removed the `checkin` timestamp. The server will generate it.
       const payload = {
         staffid: Number(selectedStaffId),
         restaurantid: Number(restaurantId),
         shift,
-        checkin: new Date().toISOString(),
       };
       await axios.post(`${API_BASE_URL}/api/attendance`, payload);
-      await fetchAttendanceRecords(); // Refresh the list with the new record
+      await fetchAttendanceRecords();
       alert('Clocked in successfully!');
-      resetForm(); // Reset the form for the next person
+      resetForm();
     } catch (err) {
       console.error('Clock In failed:', err.response?.data || err.message);
       alert('Clock In failed. Please try again.');
@@ -108,13 +103,12 @@ const AttendancePage = () => {
     }
     setIsLoading(true);
     try {
-      const payload = {
-        checkout: new Date().toISOString(),
-      };
-      await axios.put(`${API_BASE_URL}/api/attendance/${activeRecord.id}`, payload);
-      await fetchAttendanceRecords(); // Refresh the list
+      // ✅ FIX: The payload is now empty. The server knows which record to update
+      // and will generate the checkout timestamp itself.
+      await axios.put(`${API_BASE_URL}/api/attendance/${activeRecord.id}`, {});
+      await fetchAttendanceRecords();
       alert('Clocked out successfully!');
-      resetForm(); // Reset the form
+      resetForm();
     } catch (err) {
       console.error('Clock Out failed:', err.response?.data || err.message);
       alert('Clock Out failed. Please try again.');
@@ -157,7 +151,7 @@ const AttendancePage = () => {
               <div className="shift-options">
                 {['Morning', 'Afternoon', 'Night'].map((shiftType) => (
                   <button key={shiftType} className={`shift-button ${shift === shiftType ? 'active' : ''}`} onClick={() => setShift(shiftType)} type="button" disabled={!!activeRecord}>
-                    <span className="shift-icon">{shiftType === 'Morning' && '🌅'}{shiftType === 'Afternoon' && '☀️'}{shiftType === 'Night' && '🌙'}</span>
+                    <span className="shift-icon">{shiftType === 'Morning' && '☀️'}{shiftType === 'Afternoon' && '🌇'}{shiftType === 'Night' && '🌙'}</span>
                     {shiftType}
                   </button>
                 ))}
@@ -165,10 +159,10 @@ const AttendancePage = () => {
             </div>
             <div className="action-buttons">
               <button onClick={handleClockIn} className="btn btn-clock-in" disabled={!selectedStaffId || !!activeRecord || isLoading}>
-                <span className="btn-icon">🕐</span> Clock In
+                <span className="btn-icon">➡️</span> Clock In
               </button>
               <button onClick={handleClockOut} className="btn btn-clock-out" disabled={!selectedStaffId || !activeRecord || isLoading}>
-                <span className="btn-icon">🕐</span> Clock Out
+                <span className="btn-icon">⬅️</span> Clock Out
               </button>
             </div>
             {activeRecord && (
@@ -185,7 +179,7 @@ const AttendancePage = () => {
           <div className="card-header"><h2 className="card-title">Today's Attendance Records</h2><div className="records-count">{attendanceRecords.length} {attendanceRecords.length === 1 ? 'record' : 'records'}</div></div>
           <div className="records-content">
             {attendanceRecords.length === 0 ? (
-              <div className="empty-state"><div className="empty-icon">📋</div><p className="empty-text">No attendance records yet</p><p className="empty-subtext">Clock in to start tracking attendance</p></div>
+              <div className="empty-state"><div className="empty-icon">🤷</div><p className="empty-text">No attendance records yet</p><p className="empty-subtext">Clock in to start tracking attendance</p></div>
             ) : (
               <div className="table-container">
                 <table className="attendance-table">
@@ -209,42 +203,6 @@ const AttendancePage = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-
-const AttendancePageWithAccess = () => {
-  const { setCurrentPlan } = useContext(PlanContext);
-  const [loading, setLoading] = useState(true);
-  const restaurantId = localStorage.getItem('restaurantId');
-
-  useEffect(() => {
-    const fetchPlan = async () => {
-      try {
-        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
-        const data = await res.json();
-        if (data.plan) {
-          setCurrentPlan(data.plan);
-        } else {
-          setCurrentPlan('free');
-        }
-      } catch (err) {
-        console.error('Error fetching plan:', err);
-        setCurrentPlan('free');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPlan();
-  }, [restaurantId, setCurrentPlan]);
-
-  if (loading) return <div>Loading access...</div>;
-
-  return (
-    <ProtectedRoute feature="attendance">
-      <AttendancePageWithAccess />
-    </ProtectedRoute>
   );
 };
 

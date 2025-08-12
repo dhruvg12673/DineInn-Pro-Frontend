@@ -14,6 +14,7 @@ const Guest = () => {
   const [loading, setLoading] = useState(true);
   const [valid, setValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [restaurantName, setRestaurantName] = useState('The Bistro');
 
   // New state to manage which view to show after validation
   const [currentView, setCurrentView] = useState('grid'); // 'grid', 'menu', or 'order'
@@ -23,6 +24,12 @@ const Guest = () => {
     const validateGuest = async () => {
       try {
         const decodedTableNo = decodeURIComponent(tableNo);
+        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+if (restaurantResponse.data && restaurantResponse.data.name) {
+  setRestaurantName(restaurantResponse.data.name);
+} else {
+  setRestaurantName('Unknown Restaurant'); // Fallback if name not found
+}
         const response = await axios.get('https://dineinn-pro-backend.onrender.com/api/validate-guest', {
           params: {
             restaurantid: restaurantId,
@@ -103,7 +110,7 @@ const Guest = () => {
         return (
           <div className="app-container">
             <div className="app-header">
-              <h1 className="logo">The Bistro</h1>
+              <h1 className="logo">{restaurantName}</h1>
               <p className="welcome-text">Welcome, Guest!</p>
             </div>
             <div className="navigation-grid">

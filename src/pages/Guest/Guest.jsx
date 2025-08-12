@@ -24,7 +24,7 @@ const Guest = () => {
     const validateGuest = async () => {
       try {
         const decodedTableNo = decodeURIComponent(tableNo);
-        const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const restaurantResponse = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
 if (restaurantResponse.data && restaurantResponse.data.name) {
   setRestaurantName(restaurantResponse.data.name);
 } else {

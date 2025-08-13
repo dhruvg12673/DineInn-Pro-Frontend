@@ -50,7 +50,7 @@ const MultiRestaurantLogin = () => {
   const savedUser = localStorage.getItem('user');
   if (savedUser) {
     const user = JSON.parse(savedUser);
-    navigate(/${user.restaurantid}/${user.role.toLowerCase()});
+    navigate(`/${user.restaurantid}/${user.role.toLowerCase()}`);
   }
 }, [navigate]);
   const handleLogin = async () => {

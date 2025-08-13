@@ -46,7 +46,13 @@ const MultiRestaurantLogin = () => {
     if (error) setError('');
     if (message) setMessage('');
   };
-
+  useEffect(() => {
+  const savedUser = localStorage.getItem('user');
+  if (savedUser) {
+    const user = JSON.parse(savedUser);
+    navigate(/${user.restaurantid}/${user.role.toLowerCase()});
+  }
+}, [navigate]);
   const handleLogin = async () => {
     const { restaurantId, email, password, role } = loginForm;
 

@@ -458,7 +458,43 @@ const generateBillPdf = () => {
         billUrl
     };
 };
+const handleSendWhatsApp = async () => {
+  try {
+    // Generate PDF if not already done
+    let pdfToSend = generatedPdfBase64;
+    if (!pdfToSend) {
+      const { pdfBase64 } = generateBillPdf();
+      pdfToSend = pdfBase64;
+      setGeneratedPdfBase64(pdfBase64);
+    }
 
+    // Upload PDF to server
+    const filename = `Bill_${activeOrder?.billno || Date.now()}.pdf`;
+    const res = await axios.post(`${API_BASE}/api/upload-bill`, {
+      pdfBase64: pdfToSend,
+      filename,
+    });
+
+    const pdfUrl = res.data.url; // ✅ Should look like http://localhost:5000/bills/Bill_123.pdf
+
+    // Sanitize phone
+    const phone = billFormData.mobile?.replace(/\D/g, '');
+    if (!phone) {
+      alert("Customer mobile number required!");
+      return;
+    }
+
+    // Encode message (IMPORTANT: don't encode the whole URL, only message parts)
+    const message = `Hello ${billFormData.Name || 'Customer'}, your bill is ready.%0AView/Download here: ${pdfUrl}`;
+    const waLink = `https://wa.me/${phone}?text=${message}`;
+
+    // Open WhatsApp
+    window.open(waLink, '_blank');
+  } catch (err) {
+    console.error("Error sending WhatsApp:", err);
+    alert("Failed to send bill on WhatsApp");
+  }
+};
 
   const handleSaveAndPrint = () => {
   let billUrl = lastBillUrl;

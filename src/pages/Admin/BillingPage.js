@@ -1273,6 +1273,7 @@ const handleBillFormSubmit = async () => {
             <div className="bill-modal-footer">
               <button className="footer-btn save">Save</button>
               <button className="footer-btn save-print" onClick={handleSaveAndPrint}>Save & Print</button>
+              <button onClick={handleSendWhatsApp} className="btn btn-success">Send on WhatsApp</button>
               <button className="footer-btn generate" onClick={handleBillFormSubmit}>Generate</button>
               <button className="footer-btn kot" onClick={() => handleSendKOT(false)}>KOT</button>
               <button className="footer-btn kot-print" onClick={() => handleSendKOT(true)}>KOT & Print</button>

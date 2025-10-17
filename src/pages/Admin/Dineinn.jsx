@@ -109,7 +109,7 @@ const AboutUs = () => {
                 <strong>Founded:</strong> 2023
               </div>
               <div className="dineinn-info-item">
-                <strong>Founders:</strong> Dhruv Gothi
+                <strong>Founders:</strong> Dhruv Gothi & Om Makwana
               </div>
               <div className="dineinn-info-item">
                 <strong>Headquarters:</strong> Mumbai, Maharashtra, India

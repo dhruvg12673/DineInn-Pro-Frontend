@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import './orderlistStyles.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE = process.env.REACT_APP_API_URL || 'https://dineinn-pro-backend.onrender.com';
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);

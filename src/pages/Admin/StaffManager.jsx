@@ -28,7 +28,7 @@ const StaffManager = () => {
   });
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
 
   const fetchStaff = useCallback(async () => {
     if (!restaurantId) return;

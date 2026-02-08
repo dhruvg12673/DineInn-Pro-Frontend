@@ -23,7 +23,7 @@ const PollsPage = () => {
     }
     const fetchPolls = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/polls', {
+        const response = await axios.get('https://dineinn-pro-backend.onrender.com/api/polls', {
           params: { restaurantId }
         });
         setPolls(response.data);
@@ -43,7 +43,7 @@ const PollsPage = () => {
 
     setIsVoting(optionId);
     try {
-      await axios.put(`http://localhost:5000/api/poll-options/vote/${optionId}`);
+      await axios.put(`https://dineinn-pro-backend.onrender.com/api/poll-options/vote/${optionId}`);
 
       // Update the state of the specific poll that was voted on
       setPolls(currentPolls =>

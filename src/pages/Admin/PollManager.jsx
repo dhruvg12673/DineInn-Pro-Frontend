@@ -116,7 +116,7 @@ const CreatePollModal = ({ isOpen, onClose, onPollCreated }) => {
         return;
       }
 
-      await axios.post('http://localhost:5000/api/polls', {
+      await axios.post('https://dineinn-pro-backend.onrender.com/api/polls', {
         restaurantId,
         question,
         options: filteredOptions
@@ -207,7 +207,7 @@ const PollManager = () => {
     }
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/polls?restaurantId=${restaurantId}`);
+      const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/polls?restaurantId=${restaurantId}`);
       setPolls(res.data);
     } catch (error) {
       console.error('Error fetching polls:', error);
@@ -223,7 +223,7 @@ const PollManager = () => {
   const handleDeletePoll = async (pollId) => {
     try {
       // Make the API call to the new DELETE endpoint
-      await axios.delete(`http://localhost:5000/api/polls/${pollId}`);
+      await axios.delete(`https://dineinn-pro-backend.onrender.com/api/polls/${pollId}`);
       
       // Update the UI by filtering out the deleted poll from the state
       setPolls(currentPolls => currentPolls.filter(poll => poll.id !== pollId));

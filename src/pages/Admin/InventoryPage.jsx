@@ -22,7 +22,7 @@ const ExpensePage = () => {
 
   // 1. Get the restaurantId from localStorage. This is set when the user logs in.
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'http://localhost:5000'; // Define your API base URL once
+  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com'; // Define your API base URL once
 
   // Function to fetch expenses from the backend
   const fetchExpenses = async () => {

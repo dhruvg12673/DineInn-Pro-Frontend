@@ -32,7 +32,7 @@ const NotificationLog = () => {
     setNotifications(prev => prev.filter(n => n.id !== idToDelete));
 
     try {
-      await axios.delete(`http://localhost:5000/api/waiter-calls/${idToDelete}`);
+      await axios.delete(`https://dineinn-pro-backend.onrender.com/api/waiter-calls/${idToDelete}`);
     } catch (error) {
       console.error('Failed to delete notification:', error);
       // If the server fails, restore the notification to the UI
@@ -49,7 +49,7 @@ const NotificationLog = () => {
       }
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:5000/api/waiter-calls', {
+        const response = await axios.get('https://dineinn-pro-backend.onrender.com/api/waiter-calls', {
           params: { restaurantId },
         });
         const formatted = response.data.map(call => ({

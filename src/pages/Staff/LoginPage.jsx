@@ -85,7 +85,7 @@ const MultiRestaurantLogin = () => {
 
     // 3. STANDARD LOGIN (Only runs if the owner check fails)
     try {
-      const response = await axios.post('http://localhost:5000/api/login', { 
+      const response = await axios.post('https://dineinn-pro-backend.onrender.com/api/login', { 
         restaurantId, 
         email, 
         password 
@@ -120,7 +120,7 @@ const MultiRestaurantLogin = () => {
     setError('');
     setMessage('');
     try {
-      await axios.post('http://localhost:5000/api/forgot-password/send-otp', { email: forgotEmail });
+      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/send-otp', { email: forgotEmail });
       setMessage(`An OTP has been sent to ${forgotEmail}.`);
       setForgotStep(2);
     } catch (err) {
@@ -139,7 +139,7 @@ const MultiRestaurantLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/forgot-password/verify-otp', { email: forgotEmail, otp });
+      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/verify-otp', { email: forgotEmail, otp });
       setMessage('OTP verified successfully. You can now reset your password.');
       setForgotStep(3);
     } catch (err) {
@@ -162,7 +162,7 @@ const MultiRestaurantLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/forgot-password/reset-password', { email: forgotEmail, otp, password: newPassword });
+      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/reset-password', { email: forgotEmail, otp, password: newPassword });
       setMessage('Your password has been updated successfully! Redirecting to login...');
       setTimeout(() => {
         setView('login');

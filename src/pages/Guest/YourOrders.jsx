@@ -22,7 +22,7 @@ const YourOrdersPage = () => {
     }
     try {
       // Fetch restaurant name
-      const restaurantResponse = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+      const restaurantResponse = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
       if (restaurantResponse.data && restaurantResponse.data.name) {
         setRestaurantName(restaurantResponse.data.name);
       } else {
@@ -33,7 +33,7 @@ const YourOrdersPage = () => {
       // In YourOrders.jsx
 
 // Fetch orders
-const ordersResponse = await axios.get('http://localhost:5000/api/orders/by-table', {
+const ordersResponse = await axios.get('https://dineinn-pro-backend.onrender.com/api/orders/by-table', {
   params: {
     restaurantId,
     tableNumber: tableNo,

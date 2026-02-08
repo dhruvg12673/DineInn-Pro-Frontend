@@ -72,7 +72,7 @@ const FeedbackPage = () => {
       };
 
       // Ensure your server is running and accessible at this URL
-      await axios.post('http://localhost:5000/api/feedback', payload);
+      await axios.post('https://dineinn-pro-backend.onrender.com/api/feedback', payload);
 
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3000);

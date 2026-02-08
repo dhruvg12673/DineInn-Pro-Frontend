@@ -7,7 +7,7 @@ import OrderPage from './OrderPage';
 import './Guest.css';
 
 // ✅ Define the API URL once using an environment variable for flexibility
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://dineinn-pro-backend.onrender.com';
 
 const Guest = () => {
   const { restaurantId, categoryid, tableNo } = useParams();

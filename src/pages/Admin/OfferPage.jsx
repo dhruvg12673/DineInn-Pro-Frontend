@@ -66,7 +66,7 @@ const RestaurantAdminPanel = ({ restaurantId }) => {
     const fetchRestaurantDetails = async () => {
         if (!restaurantId) return;
         try {
-            const res = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+            const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
             setRestaurantName(res.data.name || 'Your Restaurant');
         } catch (err) {
             console.error('Failed to fetch restaurant details', err);
@@ -85,7 +85,7 @@ const RestaurantAdminPanel = ({ restaurantId }) => {
 
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/customers?restaurantId=${restaurantId}`);
+        const response = await axios.get(`https://dineinn-pro-backend.onrender.com/api/customers?restaurantId=${restaurantId}`);
         setCustomers(response.data);
         setError(null);
       } catch (e) {
@@ -171,7 +171,7 @@ const handleSendOffer = async () => {
 
     const selectedEmails = customers.map(c => c.email).filter(Boolean);
 
-    await axios.post('http://localhost:5000/api/send-offer-email', {
+    await axios.post('https://dineinn-pro-backend.onrender.com/api/send-offer-email', {
       pdf: pdfBase64,
       emails: selectedEmails,
       offerTitle: formData.title,
@@ -435,7 +435,7 @@ export default function OfferPageWithProtection() {
             return;
         }
       try {
-        const res = await axios.get(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
         setCurrentPlan(res.data.plan);
       } catch (err) {
         console.error('Failed to fetch restaurant plan', err);

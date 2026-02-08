@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Edit, Plus, X, Upload, Trash2, FolderPlus, Aler
 import axios from 'axios';
 import './MenuEditor.css';
 
-const API_URL = 'http://localhost:5000'; // Your backend URL
+const API_URL = 'https://dineinn-pro-backend.onrender.com'; // Your backend URL
 
 const MenuEditor = () => {
   // --- STATE MANAGEMENT ---

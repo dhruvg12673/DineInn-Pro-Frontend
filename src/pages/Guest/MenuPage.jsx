@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './GuestMenu.css';
 import {  ArrowLeft } from 'lucide-react';
-const API_URL = 'http://localhost:5000';
+const API_URL = 'https://dineinn-pro-backend.onrender.com';
 
 const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
   const [menuData, setMenuData] = useState([]);

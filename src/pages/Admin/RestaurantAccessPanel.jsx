@@ -7,7 +7,7 @@ import plans from './PlanConfig';
 import './RestaurantAccessPanel.css';
 
 // The API base URL - adjust if your backend runs elsewhere
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://dineinn-pro-backend.onrender.com/api';
 
 const RestaurantAccessPanel = () => {
   const { currentPlan, setCurrentPlan } = useContext(PlanContext);

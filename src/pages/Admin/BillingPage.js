@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; // ✅ This defines autoTable
 import './Billing.css';
 import {  ArrowLeft, MessageCircle } from 'lucide-react';  
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://dineinn-pro-backend.onrender.com';
 
 const BillingPage = () => {
   const [lastBillUrl, setLastBillUrl] = useState(null);
@@ -475,7 +475,7 @@ const handleSendWhatsApp = async () => {
       filename,
     });
 
-    const pdfUrl = res.data.url; // ✅ Should look like http://localhost:5000/bills/Bill_123.pdf
+    const pdfUrl = res.data.url; // ✅ Should look like https://dineinn-pro-backend.onrender.com/bills/Bill_123.pdf
 
     // Sanitize phone
     const phone = billFormData.mobile?.replace(/\D/g, '');

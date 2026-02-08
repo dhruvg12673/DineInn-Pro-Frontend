@@ -178,7 +178,7 @@ const RestaurantDashboard = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
         const data = await res.json();
 
         if (!data.plan) {

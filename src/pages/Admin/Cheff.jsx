@@ -5,7 +5,7 @@ import './ChefOrderDashboard.css';
 import {  ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 // This should be your backend API base URL
-const API_URL = 'http://localhost:5000'; 
+const API_URL = 'https://dineinn-pro-backend.onrender.com';
 
 const ChefOrderDashboard = () => {
   const [orders, setOrders] = useState([]);

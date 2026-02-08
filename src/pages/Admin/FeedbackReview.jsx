@@ -40,7 +40,7 @@ const FeedbackReview = () => {
       try {
         setLoading(true);
         // The server endpoint already filters by restaurantId
-        const res = await axios.get(`http://localhost:5000/api/feedback`, {
+        const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/feedback`, {
             params: { restaurantId }
         });
         setFeedbackList(res.data);
@@ -100,7 +100,7 @@ const FeedbackReviewPageWithAccess = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
         const data = await res.json();
         if (data.plan) {
           setCurrentPlan(data.plan);

@@ -30,7 +30,7 @@ const ValetParkingApp = () => {
     if (!restaurantId) return;
     try {
       // Ensure you are using the correct backend URL
-      const res = await axios.get(`http://localhost:5000/api/valet?restaurantId=${restaurantId}`);
+      const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/valet?restaurantId=${restaurantId}`);
       setCars(res.data);
     } catch (error) {
       console.error('Error fetching cars:', error);
@@ -94,7 +94,7 @@ const ValetParkingApp = () => {
         };
 
         // The backend will now handle email sending
-        const response = await axios.post('http://localhost:5000/api/valet', postData);
+        const response = await axios.post('https://dineinn-pro-backend.onrender.com/api/valet', postData);
 
         // Display the success message from the backend
         showNotification(response.data.message, 'success');
@@ -128,7 +128,7 @@ const ValetParkingApp = () => {
     const newStatus = car.status === 'With Us' ? 'Returned' : 'With Us';
 
     try {
-      await axios.put(`http://localhost:5000/api/valet/${id}`, { status: newStatus });
+      await axios.put(`https://dineinn-pro-backend.onrender.com/api/valet/${id}`, { status: newStatus });
 
       showNotification(
         `Car ${car.car_number} marked as ${newStatus}`,
@@ -405,7 +405,7 @@ const ValetParkingWithAccess = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
         const data = await res.json();
         if (data.plan) {
           setCurrentPlan(data.plan);

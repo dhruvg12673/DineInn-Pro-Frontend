@@ -12,7 +12,7 @@ const AttendancePage = () => {
   const [error, setError] = useState('');
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'http://localhost:5000';
+  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
 
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });

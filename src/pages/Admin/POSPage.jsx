@@ -4,7 +4,7 @@ import { PlanContext } from '../Admin/PlanContext';
 import ProtectedRoute from '../Admin/ProtectedRoute';
 import './POSInterface.css';
 
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://dineinn-pro-backend.onrender.com';
 
 const POSInterface = () => {
   // State for table categories and individual tables
@@ -382,7 +382,7 @@ const POSPageWithAccess = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
+        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
         const data = await res.json();
         if (data.plan) {
           setCurrentPlan(data.plan);

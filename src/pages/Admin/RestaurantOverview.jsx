@@ -30,7 +30,7 @@ const RestaurantOverview = () => {
 
             try {
                 // 2. Fetch data from your backend API using the retrieved ID
-                const response = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
+                const response = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.statusText}`);
@@ -98,7 +98,7 @@ const RestaurantOverview = () => {
 
         try {
             const restaurantId = localStorage.getItem('restaurantId');
-            const response = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}/gst`, {
+            const response = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}/gst`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

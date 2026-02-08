@@ -1,47 +1,30 @@
-/* TipPage.css - Industry Level Light Theme Styling */
+/* TipPage.css - Updated to Colorful Modern Theme */
 
-/* CSS Reset and Base Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Container Styles */
 .tip-page-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #dbeafe 0%, #ffffff 50%, #faf5ff 100%);
+  /* Matching the Pink -> Purple -> Blue gradient from your other pages */
+  background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #dbeafe 100%);
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  line-height: 1.6;
-  color: #1f2937;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Main Card Container */
+/* Glassmorphism Card Style */
 .tip-card {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
   border-radius: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  padding: 2rem;
+  padding: 2.5rem;
   width: 100%;
-  max-width: 28rem;
-  border: 1px solid #f3f4f6;
+  max-width: 400px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   position: relative;
-  overflow: hidden;
-}
-
-/* Subtle card overlay for depth */
-.tip-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  z-index: 10;
 }
 
 /* Header Styles */
@@ -51,318 +34,93 @@
 }
 
 .tip-header h1 {
-  font-size: 1.875rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #1f2937;
+  /* Matching the Purple to Pink gradient text */
+  background: linear-gradient(45deg, #9333ea, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.5rem;
-  letter-spacing: -0.025em;
 }
 
 .tip-header p {
   color: #4b5563;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 0.95rem;
 }
 
-/* Form Group Styles */
+/* Form Styling */
 .form-group {
   margin-bottom: 1.5rem;
 }
 
-.form-group:last-of-type {
-  margin-bottom: 2rem;
-}
-
-/* Label Styles */
 .form-label {
   display: block;
-  color: #374151;
+  font-size: 1rem;
   font-weight: 600;
+  color: #1f2937;
   margin-bottom: 0.75rem;
-  font-size: 1.125rem;
-  line-height: 1.5;
 }
 
-.optional-text {
-  color: #9ca3af;
-  font-weight: 400;
-  margin-left: 0.25rem;
-}
-
-/* Input Container for Relative Positioning */
-.input-container {
-  position: relative;
-}
-
-/* Dollar Sign Styling */
-.dollar-sign {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  font-size: 1.25rem;
-  font-weight: 600;
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Input Field Styles */
-.form-input {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 1rem;
-  font-size: 1.125rem;
-  background-color: #f9fafb;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  color: #1f2937;
-  line-height: 1.5;
-}
-
-/* Input with dollar sign padding */
-.form-input.with-dollar {
-  padding-left: 2rem;
-  padding-right: 1rem;
-}
-
-/* Input Focus States */
-.form-input:focus {
-  border-color: #60a5fa;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-}
-
-/* Input Placeholder Styling */
-.form-input::placeholder {
-  color: #9ca3af;
-  opacity: 1;
-}
-
-/* Select Dropdown Styles */
+/* Input Fields with Color Lock */
+.form-input, 
 .form-select {
-  width: 100%;
+  width: 100% !important;
   padding: 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #d1d5db;
   border-radius: 1rem;
-  font-size: 1.125rem;
-  background-color: #f9fafb;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: #1f2937 !important;
+  font-size: 1rem;
   outline: none;
-  color: #1f2937;
-  line-height: 1.5;
-  appearance: none;
-  cursor: pointer;
-  padding-right: 2.5rem;
+  transition: all 0.3s ease;
 }
 
+.form-input:focus, 
 .form-select:focus {
-  border-color: #60a5fa;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+  border-color: #a855f7;
+  background: white !important;
 }
 
-/* Select Dropdown Arrow */
-.select-arrow {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.select-arrow svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #9ca3af;
-}
-
-/* Add to Bill Button */
+/* Button - Matching the Primary Gradient Button */
 .add-bill-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 1.25rem;
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  color: white;
   border: none;
   border-radius: 1rem;
+  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-  outline: none;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  margin-top: 1rem;
 }
 
-/* Button Hover Effects */
-.add-bill-btn:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
+.add-bill-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 20px 30px -10px rgba(139, 92, 246, 0.4);
 }
 
-/* Button Active State */
-.add-bill-btn:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 5px 10px -3px rgba(59, 130, 246, 0.3);
+.add-bill-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-/* Button Focus State for Accessibility */
-.add-bill-btn:focus {
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+/* Floating Elements Styling */
+.floating-element {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  pointer-events: none;
 }
+.floating-element-1 { top: 10%; left: 10%; width: 5rem; height: 5rem; background: #fef3c7; animation: bounce 4s infinite; }
+.floating-element-2 { top: 20%; right: 15%; width: 4rem; height: 4rem; background: #fce7f3; animation: pulse 3s infinite; }
+.floating-element-3 { bottom: 15%; left: 5%; width: 3rem; height: 3rem; background: #dbeafe; animation: pulse 4s infinite; }
 
-/* Footer Styles */
-.tip-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-}
-
-.tip-footer p {
-  color: #6b7280;
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-/* Responsive Design */
-@media (max-width: 640px) {
-  .tip-page-container {
-    padding: 0.5rem;
-  }
-  
-  .tip-card {
-    padding: 1.5rem;
-    border-radius: 1rem;
-    margin: 0.5rem;
-  }
-  
-  .tip-header h1 {
-    font-size: 1.5rem;
-  }
-  
-  .form-input,
-  .form-select,
-  .add-bill-btn {
-    font-size: 1rem;
-    padding: 0.875rem;
-  }
-  
-  .form-input.with-dollar {
-    padding-left: 1.75rem;
-  }
-  
-  .dollar-sign {
-    font-size: 1.125rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .tip-card {
-    padding: 1.25rem;
-    max-width: 100%;
-  }
-  
-  .form-group {
-    margin-bottom: 1.25rem;
-  }
-  
-  .tip-header {
-    margin-bottom: 1.5rem;
-  }
-  
-  .tip-header h1 {
-    font-size: 1.375rem;
-  }
-  
-  .form-label {
-    font-size: 1rem;
-  }
-  
-  .add-bill-btn {
-    font-size: 1.125rem;
-  }
-}
-
-/* High DPI Display Support */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .tip-card {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  }
-}
-
-/* Dark Mode Support (Optional) */
-@media (prefers-color-scheme: dark) {
-  .tip-page-container {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e1b4b 100%);
-  }
-  
-  .tip-card {
-    background: #1f2937;
-    border-color: #374151;
-  }
-  
-  .tip-header h1 {
-    color: #f9fafb;
-  }
-  
-  .tip-header p {
-    color: #d1d5db;
-  }
-  
-  .form-label {
-    color: #e5e7eb;
-  }
-  
-  .form-input,
-  .form-select {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #f9fafb;
-  }
-  
-  .form-input:focus,
-  .form-select:focus {
-    border-color: #60a5fa;
-    background-color: #4b5563;
-  }
-  
-  .tip-footer p {
-    color: #9ca3af;
-  }
-}
-
-/* Accessibility Improvements */
-.form-input:focus,
-.form-select:focus,
-.add-bill-btn:focus {
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .form-input,
-  .form-select {
-    border-width: 3px;
-  }
-  
-  .add-bill-btn {
-    border: 2px solid #1f2937;
-  }
-}
-
-/* Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  .form-input,
-  .form-select,
-  .add-bill-btn {
-    transition: none;
-  }
-  
-  .add-bill-btn:hover {
-    transform: none;
-  }
+@keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+@keyframes bounce { 
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './OrderPage.css';
 
-const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+const API_BASE_URL = 'http://localhost:5000';
 
 // Orders Page Component with Final Functionality
 const OrdersPage = () => {
@@ -44,8 +44,8 @@ const OrdersPage = () => {
 
   useEffect(() => {
     const filtered = allOrders.filter(order =>
-      (order.billno?.toString() || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.customername || '').toLowerCase().includes(searchTerm.toLowerCase())
+      (order.billno?.toString() || '')?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      (order.customername || '')?.toLowerCase().includes(searchTerm?.toLowerCase())
     );
     setFilteredOrders(filtered);
   }, [searchTerm, allOrders]);
@@ -61,7 +61,7 @@ const OrdersPage = () => {
   // Helper function to get a CSS class for styling the status
   const getStatusClass = (status) => {
     if (!status) return 'pending';
-    return status.toLowerCase().replace(/\s+/g, '-');
+    return status?.toLowerCase().replace(/\s+/g, '-');
   };
 
   if (loading) return <div className="loading-state">Loading...</div>;
@@ -100,7 +100,7 @@ const OrdersPage = () => {
         </div>
         <div className="stat-card">
           <div className="stat-number">
-            ${filteredOrders.reduce((sum, order) => sum + parseFloat(order.totalamount || 0), 0).toLocaleString()}
+            ₹{filteredOrders.reduce((sum, order) => sum + parseFloat(order.totalamount || 0), 0).toLocaleString()}
           </div>
           <div className="stat-label">Total Value</div>
         </div>
@@ -120,7 +120,7 @@ const OrdersPage = () => {
               </span>
             </div>
             <div className="order-details">
-              <div className="order-amount">${parseFloat(order.totalamount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+              <div className="order-amount">₹{parseFloat(order.totalamount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
               <div className="order-date">{new Date(order.orderdate).toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',

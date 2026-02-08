@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './AdminHome.css';
 
-const socket = io('https://dineinn-pro-backend.onrender.com'); 
+const socket = io('http://localhost:5000'); 
 
 const AdminHome = () => {
   const { restaurantId } = useParams();
@@ -364,7 +364,7 @@ const AdminHome = () => {
             {getCurrentItems().map((item) => (
               <div
                 key={item.label}
-                onClick={() => navigate(`/${restaurantId}/${item.path.split('/').pop().toLowerCase()}`)}
+                onClick={() => navigate(`/${restaurantId}/${item.path.split('/').pop()?.toLowerCase()}`)}
                 className={`admin-card ${item.bgColor}`}
               >
                 <div className="card-icon">{item.icon}</div>

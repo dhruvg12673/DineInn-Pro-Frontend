@@ -39,7 +39,7 @@ const StockManagement = () => {
 
     const fetchStock = async () => {
       try {
-        const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/inventory?restaurantId=${restaurantId}`);
+        const res = await axios.get(`http://localhost:5000/api/inventory?restaurantId=${restaurantId}`);
         // Map backend fields to frontend fields for display consistency
         const mapped = res.data.map(item => ({
           id: item.id,
@@ -209,7 +209,7 @@ const StockManagement = () => {
     try {
       if (editingId) {
         // Update existing stock item
-        await axios.put(`https://dineinn-pro-backend.onrender.com/api/inventory/${editingId}`, stockEntryToSend);
+        await axios.put(`http://localhost:5000/api/inventory/${editingId}`, stockEntryToSend);
 
         setStockData(prev =>
           prev.map(item =>
@@ -221,7 +221,7 @@ const StockManagement = () => {
         setEditingId(null);
       } else {
         // Add new stock item
-        const res = await axios.post('https://dineinn-pro-backend.onrender.com/api/inventory', stockEntryToSend);
+        const res = await axios.post('http://localhost:5000/api/inventory', stockEntryToSend);
         // Map response fields
         const addedItem = {
           id: res.data.id,
@@ -266,7 +266,7 @@ const StockManagement = () => {
   const handleDeleteStock = async (id) => {
     if (!window.confirm('Are you sure you want to delete this stock item?')) return;
     try {
-      await axios.delete(`https://dineinn-pro-backend.onrender.com/api/inventory/${id}`);
+      await axios.delete(`http://localhost:5000/api/inventory/${id}`);
       setStockData(prev => prev.filter(item => item.id !== id));
     } catch (err) {
       console.error('Error deleting stock:', err.response?.data || err.message);
@@ -291,8 +291,8 @@ const StockManagement = () => {
 
   // Filter for search input on itemName or supplierName
   const filteredStockData = stockData.filter(item =>
-    item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.supplierName.toLowerCase().includes(searchQuery.toLowerCase())
+    item.itemName?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+    item.supplierName?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
   const totalItems = stockData.length;
@@ -403,12 +403,6 @@ const StockManagement = () => {
           />
         </div>
         <div className="controls-right">
-          <button 
-            onClick={() => setIsScannerOpen(true)} 
-            className="scan-barcode-btn"
-          >
-            📷 Scan Barcode
-          </button>
           <button onClick={handleExport} className="stock-export-btn">
             📊 Export Report
           </button>

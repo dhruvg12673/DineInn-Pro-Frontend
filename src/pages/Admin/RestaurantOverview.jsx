@@ -30,7 +30,7 @@ const RestaurantOverview = () => {
 
             try {
                 // 2. Fetch data from your backend API using the retrieved ID
-                const response = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
+                const response = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data: ${response.statusText}`);
@@ -98,7 +98,7 @@ const RestaurantOverview = () => {
 
         try {
             const restaurantId = localStorage.getItem('restaurantId');
-            const response = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}/gst`, {
+            const response = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}/gst`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -287,24 +287,22 @@ const RestaurantOverview = () => {
                         </div>
                         <div className="ro-modal-body">
                             <div className="ro-qr-container">
-                                <div className="ro-qr-placeholder">
-                                    <div className="ro-qr-code">
-                                        <svg width="200" height="200" viewBox="0 0 200 200">
-                                            <rect width="200" height="200" fill="#f0f0f0" stroke="#ddd"/>
-                                            <text x="100" y="100" textAnchor="middle" dy=".3em" fontSize="14" fill="#666">
-                                                QR Code
-                                            </text>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <p className="ro-payment-text">
-                                    Scan the QR code above to complete your payment
-                                </p>
-                                <div className="ro-payment-amount">
-                                    <span className="ro-amount">₹2,999</span>
-                                    <span className="ro-amount-label">Annual Subscription</span>
-                                </div>
-                            </div>
+    <div className="ro-qr-wrapper">
+        {/* Replace 'your-qr-image-path.png' with the actual path to your QR code image */}
+        <img 
+    src="/dhruv-qr.jpeg" 
+    alt="Payment QR Code" 
+    className="ro-payment-qr"
+/>
+    </div>
+    <p className="ro-payment-text">
+        Scan the QR code above to complete your payment
+    </p>
+    <div className="ro-payment-amount">
+        <span className="ro-amount">₹2,999</span>
+        <span className="ro-amount-label">Annual Subscription</span>
+    </div>
+</div>
                         </div>
                         <div className="ro-modal-footer">
                             <button 

@@ -4,7 +4,7 @@ import { PlanContext } from '../Admin/PlanContext';
 import ProtectedRoute from '../Admin/ProtectedRoute';
 import './POSInterface.css';
 
-const API_BASE = 'https://dineinn-pro-backend.onrender.com';
+const API_BASE = 'http://localhost:5000';
 
 const POSInterface = () => {
   // State for table categories and individual tables
@@ -125,7 +125,7 @@ const POSInterface = () => {
             });
             // Filter staff to only include those with the role 'Waiter'
             const waiters = res.data.filter(
-                (staff) => staff.role && staff.role.toLowerCase() === 'waiter'
+                (staff) => staff.role && staff.role?.toLowerCase() === 'waiter'
             );
             setWaiterList(waiters);
         } catch (error) {
@@ -138,7 +138,7 @@ const POSInterface = () => {
 
   // Filter menu items based on the selected category and search term
   const filteredItems = menuData[selectedCategory]?.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item.name?.toLowerCase().includes(searchTerm?.toLowerCase())
   ) || [];
 
   // Add a selected menu item to the current order or increment its quantity
@@ -202,8 +202,8 @@ const POSInterface = () => {
 
     const orderData = {
       restaurantid: restaurantId,
-      customername: `Table-${selectedTable}`,
-      customerno: 'N/A',
+      customername: `${selectedTable}`,
+      customerno: null,
       deliverytype: 'dinein',
       paymenttype: 'pending',
       totalamount: totalPrice,
@@ -382,7 +382,7 @@ const POSPageWithAccess = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
+        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
         const data = await res.json();
         if (data.plan) {
           setCurrentPlan(data.plan);

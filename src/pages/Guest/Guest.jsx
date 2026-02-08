@@ -7,7 +7,7 @@ import OrderPage from './OrderPage';
 import './Guest.css';
 
 // ✅ Define the API URL once using an environment variable for flexibility
-const API_URL = process.env.REACT_APP_API_URL || 'https://dineinn-pro-backend.onrender.com';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Guest = () => {
   const { restaurantId, categoryid, tableNo } = useParams();
@@ -125,26 +125,33 @@ const Guest = () => {
               <p className="welcome-text">Welcome, Guest!</p>
             </div>
             <div className="navigation-grid">
-              <button className="nav-button menu" onClick={() => setCurrentView('menu')}>
-                <div className="button-icon">🍽️</div>
-                <div className="button-text">Menu</div>
-              </button>
-              <button className="nav-button order" onClick={() => navigate(`/guest/YourOrders/${restaurantId}/${categoryid}/${tableNo}`)}>
-                <div className="button-icon">📦</div>
-                <div className="button-text">Your Order</div>
-              </button>
-              <button className="nav-button feedback" onClick={() => navigate(`/guest/FeedbackPage/${restaurantId}/${categoryid}/${tableNo}`)}>
-                <div className="button-icon">⭐</div>
-                <div className="button-text">Feedback</div>
-              </button>
-              <button className="nav-button suggestion" onClick={() => navigate(`/guest/TipPage/${restaurantId}/${categoryid}/${tableNo}`)}>
-                <div className="button-icon">💡</div>
-                <div className="button-text">Tip</div>
-              </button>
-              <button className="nav-button poll" onClick={() => navigate(`/guest/PollsPage/${restaurantId}/${categoryid}/${tableNo}`)}>
-                <div className="button-icon">📊</div>
-                <div className="button-text">Poll</div>
-              </button>
+  <button className="nav-button menu" onClick={() => setCurrentView('menu')}>
+    <div className="button-icon">🍽️</div>
+    <div className="button-text">Menu</div>
+  </button>
+  
+  {/* All these paths now pass the categoryid required by your server.js logic */}
+  <button className="nav-button order" onClick={() => navigate(`/guest/YourOrders/${restaurantId}/${categoryid}/${tableNo}`)}>
+    <div className="button-icon">📦</div>
+    <div className="button-text">Your Orders</div>
+  </button>
+
+  <button className="nav-button feedback" onClick={() => navigate(`/guest/FeedbackPage/${restaurantId}/${categoryid}/${tableNo}`)}>
+    <div className="button-icon">⭐</div>
+    <div className="button-text">Feedback</div>
+  </button>
+
+  <button className="nav-button suggestion" onClick={() => navigate(`/guest/TipPage/${restaurantId}/${categoryid}/${tableNo}`)}>
+    <div className="button-icon">💰</div>
+    <div className="button-text">Add Tip</div>
+  </button>
+
+  <button className="nav-button poll" onClick={() => navigate(`/guest/PollsPage/${restaurantId}/${categoryid}/${tableNo}`)}>
+    <div className="button-icon">📊</div>
+    <div className="button-text">Live Polls</div>
+  </button>
+
+  
               <button className="nav-button call-waiter" onClick={handleCallWaiter}>
                 <div className="button-icon">🛎️</div>
                 <div className="button-text">Call Waiter</div>

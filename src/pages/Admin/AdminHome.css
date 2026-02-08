@@ -915,3 +915,80 @@
     flex-wrap: wrap;
   }
 }
+/* Modern Support Hub in Header */
+.header-support-hub {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: #f8fafc;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.support-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.support-contact-item:hover {
+  opacity: 0.8;
+}
+
+.support-icon-circle {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.support-text-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.support-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+.support-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Specific styling for the separator if needed on mobile */
+
+@media (max-width: 768px) {
+  .header-support-hub {
+    display: flex;
+    flex-direction: column; /* Stack phone and email vertically */
+    gap: 0.5rem;
+    padding: 0.5rem;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .support-contact-item {
+    gap: 0.5rem;
+  }
+  
+  /* Ensure the header expands to fit the new layout */
+  .admin-header {
+    height: auto;
+    padding: 1rem;
+  }
+}

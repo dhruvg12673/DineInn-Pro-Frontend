@@ -12,6 +12,27 @@
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
+/* WhatsApp Button Styling */
+.footer-btn.whatsapp {
+  background-color: #25D366 !important; /* WhatsApp Official Green */
+  color: white !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.footer-btn.whatsapp:hover {
+  background-color: #128C7E !important; /* Darker WhatsApp Green on hover */
+  transform: translateY(-1px);
+}
+
+.footer-btn.whatsapp svg {
+  flex-shrink: 0;
+}
 /* Table Information Header */
 .table-info-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

@@ -17,7 +17,7 @@ const Cashflow = () => {
   const [customToDate, setCustomToDate] = useState('');
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   // Helper function to get date range based on filter
   const getDateRange = () => {
@@ -87,7 +87,7 @@ const Cashflow = () => {
       if (!searchTerm) return items;
       return items.filter(item =>
         searchFields.some(field =>
-          item[field]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+          item[field]?.toString()?.toLowerCase().includes(searchTerm?.toLowerCase())
         )
       );
     };

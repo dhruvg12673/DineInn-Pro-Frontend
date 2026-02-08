@@ -1,172 +1,144 @@
-// HelpSupportCard.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  HelpCircle, 
-  Mail, 
-  Phone, 
-  MessageCircle, 
-  FileText, 
-  Clock,
-  Facebook,
-  Instagram,
-  Twitter,
-  Send,
-  Headphones
+  Mail, Phone, Clock, 
+  ChevronDown, ChevronUp, Search, 
+  MessageCircle, Info,
+  Youtube, Instagram, Linkedin 
 } from 'lucide-react';
 import './HelpSupportCard.css';
 
-const HelpSupportCard = () => {
+const HelpSupport = () => {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const faqs = [
     {
-      question: "How can I place an order?",
-      answer: "Simply browse our products, add items to your cart, and proceed to checkout. Follow the step-by-step process to complete your purchase."
+      question: "How do I update my menu in real-time?",
+      answer: "Navigate to Operations > Menu Editor. You can add dishes, update prices, or toggle items on/off instantly. Changes reflect on the Guest Menu immediately after saving."
     },
     {
-      question: "What payment methods are accepted?",
-      answer: "We accept all major credit cards, PayPal, Apple Pay, Google Pay, and bank transfers for your convenience."
+      question: "How does the 'Call Waiter' system work?",
+      answer: "When a guest clicks 'Call Waiter' on their mobile, an alert is sent to your Admin Panel and logged in the Notification Logs. Ensure your system volume is on for audio alerts."
     },
     {
-      question: "How do I track my order?",
-      answer: "Once your order ships, you'll receive a tracking number via email. Use this number on our tracking page or the carrier's website."
+      question: "Can I manage different restaurant sections?",
+      answer: "Yes! Use the Table Manager to create categories like 'AC,' 'Non-AC,' or 'Rooftop.' Each category can house specific tables for better organization."
     },
     {
-      question: "How can I cancel my order?",
-      answer: "Orders can be cancelled within 1 hour of placement. Contact our support team immediately for assistance with cancellations."
+      question: "How do guests add tips to their bill?",
+      answer: "Guests select 'Add Tip' on their landing page, choose a waiter, and enter an amount. This is linked to their active Order ID and appears on your Billing Page automatically."
     },
     {
-      question: "What if I have an issue with my order?",
-      answer: "Contact our support team right away. We're committed to resolving any issues quickly and ensuring your satisfaction."
+      question: "Where can I view daily revenue and sales?",
+      answer: "Go to Reports > Dashboard. This section provides live analytics, total sales volume, and customer feedback trends."
+    },
+    {
+      question: "What if a table shows 'No Active Order'?",
+      answer: "Verify the guest has placed an order. If the issue persists, check the 'Order Manager' to ensure the table session is active and linked to the correct category."
     }
   ];
 
-  const handleLiveChat = () => {
-    // Placeholder for live chat functionality
-    alert('Live chat would open here');
-  };
+  const socialLinks = [
+    { name: 'YouTube', icon: <Youtube size={20} />, url: 'https://www.youtube.com/channel/UC75zeYtPn7MUJQxKZMyAccA', class: 'yt' },
+    { name: 'Instagram', icon: <Instagram size={20} />, url: 'https://www.instagram.com/dineinnpro', class: 'ig' },
+    { name: 'LinkedIn', icon: <Linkedin size={20} />, url: 'https://www.linkedin.com/company/dineinnpro', class: 'li' }
+  ];
 
-  const handleSupportTicket = () => {
-    // Placeholder for support ticket submission
-    alert('Support ticket form would open here');
-  };
+  const filteredFaqs = faqs.filter(faq => 
+    faq.question.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="hsc-help-support-card">
-      <div className="hsc-card-header">
-        <h1 className="hsc-card-title">Help & Support</h1>
-        <p className="hsc-card-subtitle">We're here to help! Your satisfaction is our priority.</p>
-      </div>
-      
-      <div className="hsc-card-content">
-        <div className="hsc-faqs-section">
-          <h2 className="hsc-section-title">
-            <HelpCircle className="hsc-section-icon" />
-            Frequently Asked Questions
-          </h2>
+    <div className="hs-pleasant-container">
+      <header className="hs-pleasant-header">
+        <div className="hs-pleasant-header-content">
+          <div className="hs-status-pill">
+            <span className="hs-dot-pulse"></span> System Online
+          </div>
+          <h1>Help & Support</h1>
+          <p>We're here to help you get the most out of DineInnPro™</p>
           
-          <div className="hsc-faqs-list">
-            {faqs.map((faq, index) => (
-              <div key={index} className="hsc-faq-item">
-                <h3 className="hsc-faq-question">{faq.question}</h3>
-                <p className="hsc-faq-answer">{faq.answer}</p>
-              </div>
-            ))}
+          <div className="hs-search-wrapper">
+            <Search className="hs-search-icon" size={20} />
+            <input 
+              type="text" 
+              placeholder="Search for help (billing, menu, tables...)" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
-        
-        <div className="hsc-contact-section">
-          <h2 className="hsc-section-title">
-            <Headphones className="hsc-section-icon" />
-            Contact Us
-          </h2>
-          
-          <div className="hsc-contact-info">
-            <div className="hsc-contact-item">
-              <Mail className="hsc-contact-icon" />
-              <p className="hsc-contact-text">
-                <a href="mailto:support@example.com" className="hsc-contact-link">
-                  support@example.com
-                </a>
-              </p>
+      </header>
+
+      <div className="hs-pleasant-wrapper">
+        <div className="hs-main-layout">
+          <section className="hs-faq-section">
+            <h2 className="hs-section-title">Common Questions</h2>
+            <div className="hs-accordion">
+              {filteredFaqs.length > 0 ? (
+                filteredFaqs.map((faq, index) => (
+                  <div 
+                    key={index} 
+                    className={`hs-accordion-item ${activeIndex === index ? 'active' : ''}`}
+                    onClick={() => setActiveIndex(activeIndex === index ? null : index)}
+                  >
+                    <div className="hs-accordion-header">
+                      <span>{faq.question}</span>
+                      {activeIndex === index ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                    </div>
+                    {activeIndex === index && (
+                      <div className="hs-accordion-content">
+                        <p>{faq.answer}</p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="hs-no-results">No matches found for your search.</div>
+              )}
             </div>
+          </section>
+
+          <aside className="hs-contact-sidebar">
+            <div className="hs-contact-box">
+              <div className="hs-box-icon"><Phone size={20} /></div>
+              <div className="hs-box-text">
+                <span className="hs-box-label">Call Support</span>
+                <span className="hs-box-value">+91 9324175216</span>
+              </div>
+            </div>
+
+            <div className="hs-contact-box">
+              <div className="hs-box-icon"><Mail size={20} /></div>
+              <div className="hs-box-text">
+                <span className="hs-box-label">Email Us</span>
+                <span className="hs-box-value">dineinnpro@gmail.com</span>
+              </div>
+            </div>
+
+            <div className="hs-social-section">
+              <span className="hs-social-title">Follow Our Community</span>
+              <div className="hs-social-grid">
+                {socialLinks.map((social) => (
+                  <a 
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`hs-social-btn ${social.class}`}
+                  >
+                    {social.icon}
+                  </a>
+                ))}
+              </div>
+            </div>
+
             
-            <div className="hsc-contact-item">
-              <Phone className="hsc-contact-icon" />
-              <p className="hsc-contact-text">
-                <a href="tel:+18001234567" className="hsc-contact-link">
-                  +1-800-123-4567
-                </a>
-              </p>
-            </div>
-          </div>
-          
-          <div className="hsc-operating-hours">
-            <h4>Operating Hours</h4>
-            <p>Monday - Friday: 9:00 AM - 5:00 PM EST<br />
-               Saturday - Sunday: 10:00 AM - 2:00 PM EST</p>
-          </div>
-          
-          <div className="hsc-action-buttons">
-            <button 
-              className="hsc-btn hsc-btn-primary"
-              onClick={handleLiveChat}
-            >
-              <MessageCircle className="hsc-btn-icon" />
-              Start Live Chat
-            </button>
-            
-            <button 
-              className="hsc-btn hsc-btn-secondary"
-              onClick={handleSupportTicket}
-            >
-              <FileText className="hsc-btn-icon" />
-              Submit Support Ticket
-            </button>
-          </div>
-          
-          <div className="hsc-social-media">
-            <h4 className="hsc-social-title">Follow Us</h4>
-            <div className="hsc-social-links">
-              <a 
-                href="https://facebook.com/example" 
-                className="hsc-social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-              >
-                <Facebook className="hsc-social-icon" />
-              </a>
-              
-              <a 
-                href="https://www.instagram.com/dineinnpro/" 
-                className="hsc-social-link"
-                target="https://www.instagram.com/dineinnpro/"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-              >
-                <Instagram className="hsc-social-icon" />
-              </a>
-              
-              <a 
-                href="https://twitter.com/example" 
-                className="hsc-social-link"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter"
-              >
-                <Twitter className="hsc-social-icon" />
-              </a>
-            </div>
-          </div>
-          
-          <div className="hsc-helpful-tip">
-            <p className="hsc-tip-text">
-              💡 Need immediate help? Try our live chat for the fastest response!
-            </p>
-          </div>
+          </aside>
         </div>
       </div>
     </div>
   );
 };
 
-export default HelpSupportCard;
+export default HelpSupport;

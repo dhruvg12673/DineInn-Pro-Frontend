@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RefreshCw, List } from 'lucide-react';
 import './MenuOnOff.css';
 
-const API_URL = 'https://dineinn-pro-backend.onrender.com'; // Your backend URL
+const API_URL = 'http://localhost:5000'; // Your backend URL
 
 const MenuOnOff = () => {
   const [menuData, setMenuData] = useState([]);

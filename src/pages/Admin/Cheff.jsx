@@ -5,7 +5,7 @@ import './ChefOrderDashboard.css';
 import {  ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 // This should be your backend API base URL
-const API_URL = 'https://dineinn-pro-backend.onrender.com'; 
+const API_URL = 'http://localhost:5000'; 
 
 const ChefOrderDashboard = () => {
   const [orders, setOrders] = useState([]);
@@ -164,14 +164,14 @@ const ChefOrderDashboard = () => {
 
   const filteredOrders = orders.filter(order => {
     if (filters.status !== 'all' && order.status !== filters.status) return false;
-    if (filters.table && order.tablenumber && !order.tablenumber.toLowerCase().includes(filters.table.toLowerCase())) return false;
-    if (filters.waiter && (!order.waiterName || !order.waiterName.toLowerCase().includes(filters.waiter.toLowerCase()))) return false;
+    if (filters.table && order.tablenumber && !order.tablenumber?.toLowerCase().includes(filters.table?.toLowerCase())) return false;
+    if (filters.waiter && (!order.waiterName || !order.waiterName?.toLowerCase().includes(filters.waiter?.toLowerCase()))) return false;
     if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      const matchesItems = order.items.some(item => item.name.toLowerCase().includes(searchTerm));
-      const matchesTable = order.tablenumber && order.tablenumber.toLowerCase().includes(searchTerm);
-      const matchesWaiter = order.waiterName && order.waiterName.toLowerCase().includes(searchTerm);
-      const matchesCategory = order.categoryName && order.categoryName.toLowerCase().includes(searchTerm);
+      const searchTerm = filters.search?.toLowerCase();
+      const matchesItems = order.items.some(item => item.name?.toLowerCase().includes(searchTerm));
+      const matchesTable = order.tablenumber && order.tablenumber?.toLowerCase().includes(searchTerm);
+      const matchesWaiter = order.waiterName && order.waiterName?.toLowerCase().includes(searchTerm);
+      const matchesCategory = order.categoryName && order.categoryName?.toLowerCase().includes(searchTerm);
       if (!matchesItems && !matchesTable && !matchesWaiter && !matchesCategory) return false;
     }
     return true;
@@ -246,7 +246,7 @@ const ChefOrderDashboard = () => {
                         <MapPin className="table-icon" />
                         <span className="table-name">
                           {order.categoryName && `${order.categoryName} - `}
-                          {order.tablenumber ? `Table ${order.tablenumber}` : 'Guest Order'}
+                          {order.tablenumber ? `${order.tablenumber}` : 'Guest Order'}
                         </span>
                       </div>
                       <span className={`status-badge ${getStatusColor(order.status)}`}>
@@ -260,8 +260,8 @@ const ChefOrderDashboard = () => {
                       </div>
                     )}
                     <div className="time-info">
-                      <Clock className="time-icon" />
-                      <span>Placed: {formatTime(order.placedTime)}</span>
+                      
+                      <span>Order Placed : {formatTime(order.placedTime)}</span>
                     </div>
                     {(order.status === 'accepted' || order.status === 'preparing') && timers[order.id] != null && (
                       <div className="timer-info">

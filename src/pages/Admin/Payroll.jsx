@@ -16,7 +16,7 @@ const StaffPayrollPage = () => {
   const [bonusAmount, setBonusAmount] = useState('');
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   const months = useMemo(() => {
     const monthArray = [];
@@ -286,7 +286,7 @@ const StaffPayrollWithAccess = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const res = await fetch(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
+        const res = await fetch(`http://localhost:5000/api/restaurants/${restaurantId}`);
         const data = await res.json();
         if (data.plan) {
           setCurrentPlan(data.plan);

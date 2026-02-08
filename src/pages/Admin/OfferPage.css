@@ -93,25 +93,67 @@ body {
   font-size: 0.875rem;
 }
 
+
+/* forces the box to fill the available space and match the date picker */
 .form-input {
+  width: 100% !important; 
+  min-height: 45px; /* ensures height matches the date picker exactly */
+  display: block;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* ensures the grid distributes 50/50 even if one box is empty */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: end; /* keeps labels and boxes aligned at the bottom */
+}
+/* Fix for full width, dark text, and white background */
+.form-input, 
+.form-textarea {
+  width: 100% !important; /* Forces the box to match the "Valid Till" width */
   padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background-color: white;
+  
+  /* COLOR FIXES */
+  background-color: #ffffff !important; /* Forces white background */
+  color: #1e293b !important;           /* Forces dark text color (var(--text-primary)) */
+  display: block;
 }
 
-.form-input:focus {
+/* Ensure background stays white and text stays dark when typing/focused */
+.form-input:focus, 
+.form-textarea:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+  background-color: #ffffff !important; 
+  color: #1e293b !important;
 }
 
+/* Prevents Chrome/Edge from turning the background black during autofill */
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover, 
+.form-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1e293b !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
 .form-textarea {
-  min-height: 100px;
+  min-height: 120px; /* Gives you more space to type */
   resize: vertical;
   font-family: inherit;
+  line-height: 1.5;
+  color: #1e293b !important; /* Ensures text is always visible dark blue */
+  background-color: #ffffff !important; /* Ensures background is always white */
 }
 
 .discount-options {

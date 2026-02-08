@@ -66,7 +66,7 @@ const OrderPage = ({ onBackToMenu, orderData, tableNo, restaurantName }) => {
               </div>
             </div>
             <div className="order-summary">
-              <div className="order-amount">${orderData.totalAmount.toFixed(2)}</div>
+              <div className="order-amount">₹{orderData.totalAmount.toFixed(2)}</div>
               <div className="order-items-count">{orderData.itemCount} items</div>
             </div>
             <button 
@@ -88,7 +88,7 @@ const OrderPage = ({ onBackToMenu, orderData, tableNo, restaurantName }) => {
                       <span className="item-quantity">×{item.quantity}</span>
                     </div>
                     <div className="item-price">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₹{(item.price * item.quantity).toFixed(2)}
                     </div>
                   </div>
                 ))}

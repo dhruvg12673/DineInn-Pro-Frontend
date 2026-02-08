@@ -4,7 +4,7 @@ import { Plus, Trash2, MapPin, Edit3, X } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './TableManagementPage.css';
 import {  ArrowLeft } from 'lucide-react';
-const API_BASE = 'https://dineinn-pro-backend.onrender.com'; // Adjust if your backend URL differs
+const API_BASE = 'http://localhost:5000'; // Adjust if your backend URL differs
 
 const TableManagementPage = () => {
   const { restaurantId } = useParams();

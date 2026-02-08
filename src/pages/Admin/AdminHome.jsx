@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import './AdminHome.css';
 
-const socket = io('https://dineinn-pro-backend.onrender.com'); 
+const socket = io('http://localhost:5000'); 
 
 const AdminHome = () => {
   const { restaurantId } = useParams();
@@ -109,12 +109,26 @@ const AdminHome = () => {
   }, [restaurantId]);
 
   const handleLogout = () => {
-    console.log("Logout clicked");
-    setIsProfileModalOpen(false);
-    localStorage.removeItem('user');
-    localStorage.removeItem('restaurantId');
-    navigate('/login');
-  };
+  console.log("Logging out and clearing session data...");
+  
+  // 1. Clear the specific user and restaurant data
+  localStorage.removeItem('user');
+  localStorage.removeItem('restaurantId');
+  
+  // 2. OPTIONAL: Clear any other session-specific keys you've created
+  // This clears the notification count for this specific restaurant
+  localStorage.removeItem(`_${restaurantId}`);
+  
+  // 3. Close any open modals
+  setIsProfileModalOpen(false);
+  
+  // 4. Redirect to login page
+  navigate('/login');
+  
+  // 5. Force a page reload (Optional but recommended)
+  // This ensures all state in memory is wiped out completely
+  window.location.reload();
+};
 
   // Social media links
   const socialLinks = [
@@ -372,16 +386,29 @@ const AdminHome = () => {
       <div className="admin-header">
         <div className="bistro-admin">
           🍴 {userData.restaurantName || 'Manager Panel'}
-          <div className="brand-tagline">Powered by DineInPro™</div>
+          <div className="brand-tagline">Powered by DineInnPro™</div>
         </div>
         <div className="nav-links">
           <div className="live-time">
             <span className="time-icon">🕐</span>
             <span className="current-time">{currentTime.toLocaleTimeString()}</span>
           </div>
-          <span className="contact-info">
-            📞 +9152728382 ✉support@dineinpro.com
-          </span>
+          <div className="header-support-hub">
+  <div className="support-contact-item">
+    <div className="support-icon-circle">📞</div>
+    <div className="support-text-stack">
+      <span className="support-label">Support</span>
+      <span className="support-value">+91 9324175216</span>
+    </div>
+  </div>
+  <div className="support-contact-item">
+    <div className="support-icon-circle">✉️</div>
+    <div className="support-text-stack">
+      <span className="support-label">Email Us</span>
+      <span className="support-value">dineinnpro@gmail.com</span>
+    </div>
+  </div>
+</div>
           <div className="profile-icon" onClick={handleProfileClick}>👤</div>
         </div>
       </div>
@@ -430,7 +457,7 @@ const AdminHome = () => {
           {/* Brand Info Section */}
           <div className="sidebar-brand-info">
             
-            <div className="brand-name">DineInPro</div>
+            <div className="brand-name">DineInnPro</div>
             <div className="brand-version">v2.4.1</div>
           </div>
 
@@ -487,7 +514,7 @@ const AdminHome = () => {
             {getCurrentItems().map((item) => (
               <div
                 key={item.label}
-                onClick={() => navigate(`/${restaurantId}/${item.path.split('/').pop().toLowerCase()}`)}
+                onClick={() => navigate(`/${restaurantId}/${item.path.split('/').pop()?.toLowerCase()}`)}
                 className={`admin-card ${item.bgColor}`}
               >
                 <div className="card-icon">{item.icon}</div>

@@ -251,6 +251,32 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* Styling for the QR code image */
+.ro-qr-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+}
+
+.ro-payment-qr {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Ensure the modal content is responsive */
+@media (max-width: 480px) {
+    .ro-payment-qr {
+        width: 150px;
+        height: 150px;
+    }
+}
 .ro-payment-text {
   font-size: 1rem;
   color: #6b7280;

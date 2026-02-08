@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Edit, Trash2, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Search, Edit, Trash2, X, Mail, CheckCircle, XCircle, Info } from 'lucide-react';
 import { PlanContext } from './PlanContext';
 import plans from './PlanConfig';
 
 import './RestaurantAccessPanel.css';
 
 // The API base URL - adjust if your backend runs elsewhere
-const API_URL = 'https://dineinn-pro-backend.onrender.com/api';
+const API_URL = 'http://localhost:5000/api';
 
 const RestaurantAccessPanel = () => {
   const { currentPlan, setCurrentPlan } = useContext(PlanContext);
@@ -28,6 +28,9 @@ const RestaurantAccessPanel = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
+
+  // ✅ Added: Session-based Mail Log State
+  const [sessionMailLogs, setSessionMailLogs] = useState([]);
 
   // State for the edit modal
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -85,15 +88,23 @@ const RestaurantAccessPanel = () => {
     }
 
     try {
-      // The backend expects integer ID for restaurantId
       const payload = {
           ...formData,
           restaurantId: parseInt(formData.restaurantId, 10)
       };
 
       const response = await axios.post(`${API_URL}/restaurants`, payload);
-      const newRestaurant = response.data;
       
+      // ✅ Added: Update Session Mail Log on Success
+      const successLog = {
+        time: new Date().toLocaleTimeString(),
+        email: formData.adminEmail,
+        subject: 'Welcome to DineInnPro',
+        status: 'Sent'
+      };
+      setSessionMailLogs(prev => [successLog, ...prev]);
+
+      const newRestaurant = response.data;
       const newRecord = {
         id: newRestaurant.id,
         restaurantId: newRestaurant.id,
@@ -113,6 +124,15 @@ const RestaurantAccessPanel = () => {
       });
       alert('Restaurant created successfully!');
     } catch (err) {
+      // ✅ Added: Update Session Mail Log on Failure
+      const failureLog = {
+        time: new Date().toLocaleTimeString(),
+        email: formData.adminEmail,
+        subject: 'Welcome to DineInnPro',
+        status: 'Failed'
+      };
+      setSessionMailLogs(prev => [failureLog, ...prev]);
+      
       console.error(err);
       alert(err.response?.data?.error || 'Failed to create restaurant.');
     }
@@ -126,7 +146,6 @@ const RestaurantAccessPanel = () => {
     setSortConfig({ key, direction });
   };
 
-  // PERMANENTLY deletes a record
   const handleDelete = async (restaurantId, restaurantName) => {
     if (window.confirm(`Are you sure you want to PERMANENTLY DELETE ${restaurantName}? This action cannot be undone.`)) {
       try {
@@ -140,19 +159,16 @@ const RestaurantAccessPanel = () => {
     }
   };
   
-  // Opens the modal to edit a record
   const handleEditClick = (record) => {
     setEditingRecord(record);
     setIsEditModalOpen(true);
   };
 
-  // Handles input changes within the edit modal
   const handleModalInputChange = (e) => {
     const { name, value } = e.target;
     setEditingRecord(prev => ({...prev, [name]: value}));
   };
 
-  // Submits the updated record data from the modal
   const handleUpdateRecord = async (e) => {
       e.preventDefault();
       if (!editingRecord) return;
@@ -169,26 +185,22 @@ const RestaurantAccessPanel = () => {
           
           await axios.put(`${API_URL}/restaurants/${editingRecord.id}`, payload);
           
-          // Update the record in the main list
           setRecords(prevRecords => prevRecords.map(rec => 
               rec.id === editingRecord.id ? editingRecord : rec
           ));
           
-          // Close the modal
           setIsEditModalOpen(false);
           setEditingRecord(null);
           alert('Restaurant updated successfully!');
-
       } catch (err) {
           console.error('Failed to update restaurant', err);
           alert(err.response?.data?.error || 'Could not update the restaurant.');
       }
   };
 
-
   const filteredRecords = records.filter(record => 
-    record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.status.toLowerCase().includes(searchTerm.toLowerCase())
+    record.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+    record.status?.toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   const sortedRecords = [...filteredRecords].sort((a, b) => {
@@ -365,6 +377,56 @@ const RestaurantAccessPanel = () => {
             </div>
           )}
         </div>
+
+        {/* ✅ Added: Mailing Session Log Section */}
+        <div className="logs-section" style={{ marginTop: '2.5rem' }}>
+          <div className="logs-header">
+            <h2 className="logs-title"><Mail size={20} style={{ marginRight: '8px' }} /> Recent Email Activity</h2>
+            <span style={{ fontSize: '0.8rem', color: '#666' }}>(Current Session Only)</span>
+          </div>
+          
+          <div className="table-container">
+            <table className="logs-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Recipient Email</th>
+                  <th>Subject</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessionMailLogs.length > 0 ? (
+                  sessionMailLogs.map((log, index) => (
+                    <tr key={index}>
+                      <td>{log.time}</td>
+                      <td>{log.email}</td>
+                      <td>{log.subject}</td>
+                      <td>
+                        {log.status === 'Sent' ? (
+                          <span className="status-badge status-active" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <CheckCircle size={12} /> Sent
+                          </span>
+                        ) : (
+                          <span className="status-badge status-suspended" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <XCircle size={12} /> Failed
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                      <Info size={16} style={{ marginRight: '5px' }} /> No emails sent during this session.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   );

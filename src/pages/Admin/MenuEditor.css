@@ -109,8 +109,16 @@
   border: 1px solid #e2e8f0;
 }
 
+.menu-editor__category-header-wrapper {
+  display: flex;
+  align-items: center; /* This keeps the trash icon and title on the same line */
+  justify-content: space-between;
+  background: white;
+  border-bottom: 1px solid #f1f5f9;
+}
+
 .menu-editor__category-header {
-  width: 100%;
+  flex: 1; /* This makes the clickable area take up the most space */
   padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -123,6 +131,24 @@
 
 .menu-editor__category-header:hover {
   background-color: #f8fafc;
+}
+
+.menu-editor__delete-category-btn {
+  margin-right: 1.5rem; /* Adds spacing from the right edge */
+  color: #ef4444;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.menu-editor__delete-category-btn:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
 }
 
 .menu-editor__category-title {

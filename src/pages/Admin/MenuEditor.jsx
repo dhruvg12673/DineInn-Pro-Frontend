@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, Edit, Plus, X, Upload, Trash2, FolderPlus, Aler
 import axios from 'axios';
 import './MenuEditor.css';
 
-const API_URL = 'https://dineinn-pro-backend.onrender.com'; // Your backend URL
+const API_URL = 'http://localhost:5000'; // Your backend URL
 
 const MenuEditor = () => {
   // --- STATE MANAGEMENT ---
@@ -245,7 +245,7 @@ const MenuEditor = () => {
                             {item.ingredients && <p className="menu-editor__item-ingredients"><strong>Ingredients:</strong> {item.ingredients}</p>}
                           </div>
                           <div className="menu-editor__item-actions">
-                            <span className="menu-editor__item-price">${parseFloat(item.price).toFixed(2)}</span>
+                            <span className="menu-editor__item-price">₹{parseFloat(item.price).toFixed(2)}</span>
                             <button onClick={() => handleEditItem(item)} className="menu-editor__edit-btn"><Edit size={16} /></button>
                             <button onClick={() => handleDeleteItem(item.id)} className="menu-editor__delete-btn"><Trash2 size={16} /></button>
                           </div>
@@ -312,12 +312,19 @@ const MenuEditor = () => {
                   <input type="text" value={formData.name || ''} onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))} className="menu-editor__form-input" placeholder="Enter dish name" />
                 </div>
                 <div className="menu-editor__form-group">
-                  <label className="menu-editor__form-label">Price</label>
-                  <div className="menu-editor__price-input">
-                    <span className="menu-editor__currency">$</span>
-                    <input type="number" step="0.01" value={formData.price || ''} onChange={e => setFormData(prev => ({ ...prev, price: e.target.value }))} className="menu-editor_form-input menu-editor_price-field" placeholder="0.00" />
-                  </div>
-                </div>
+  <label className="menu-editor__form-label">Price</label>
+  <div className="menu-editor__price-input">
+    <span className="menu-editor__currency">₹</span>
+    <input 
+      type="number" 
+      step="0.01" 
+      value={formData.price || ''} 
+      onChange={e => setFormData(prev => ({ ...prev, price: e.target.value }))} 
+      className="menu-editor__form-input menu-editor__price-field" 
+      placeholder="0.00" 
+    />
+  </div>
+</div>
               </div>
               <div className="menu-editor__form-group">
                 <label className="menu-editor__form-label">Category</label>

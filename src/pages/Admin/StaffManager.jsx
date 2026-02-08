@@ -28,7 +28,7 @@ const StaffManager = () => {
   });
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   const fetchStaff = useCallback(async () => {
     if (!restaurantId) return;
@@ -87,9 +87,9 @@ const StaffManager = () => {
   const filteredAttendance = useMemo(() => {
     if (!searchTerm) return attendanceWithStaff;
     return attendanceWithStaff.filter(record =>
-      record.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      record.shift.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      record.department.toLowerCase().includes(searchTerm.toLowerCase())
+      record.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      record.shift?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+      record.department?.toLowerCase().includes(searchTerm?.toLowerCase())
     );
   }, [attendanceWithStaff, searchTerm]);
 

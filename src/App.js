@@ -44,6 +44,24 @@ import FeedbackReview from './pages/Admin/FeedbackReview';
 import UnauthorizedPage from './pages/Common/UnauthorizedPage';
 import Guest from './pages/Guest/Guest';
 
+// --- Security Wrapper for Owner Access ---
+const ProtectedOwnerRoute = ({ children }) => {
+  const storedUser = localStorage.getItem('user');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  // Retrieve the owner email from env (matches the bypass logic in LoginPage)
+  const ownerEmail = process.env.REACT_APP_OWNER_MAIL;
+
+  // Verify that the user exists and their email matches the master owner email
+  const isOwner = user && user.email === ownerEmail;
+
+  if (!isOwner) {
+    // If not the owner, force redirect to login
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 const getLoggedInUser = () => {
   try {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -90,7 +108,7 @@ function App() {
             <Route path="/guest/OrderPage/:restaurantId/:categoryid/:tableNo" element={<OrderPage />} />
             <Route path="/guest/PollsPage/:restaurantId/:categoryid/:tableNo" element={<PollsPage />} />
             <Route path="/guest/FeedbackPage/:restaurantId/:categoryid/:tableNo" element={<FeedbackPage />} />
-            <Route path="/guest/TipPage/:restaurantId/:categoryid/:tableNo" element={<TipPage />} />
+            <Route path="/guest/TipPage/:restaurantId/:tableCategoryId/:tableNo" element={<TipPage />} />
             <Route path="/:restaurantId/admin/billing" element={<BillingPage />} />
             <Route path="/:restaurantId/billing" element={<BillingPage />} />
             <Route path="/:restaurantId/Dashboard" element={<Dashboard />} />
@@ -114,7 +132,15 @@ function App() {
             <Route path="/:restaurantId/AttendancePage" element={<AttendancePage/>} />
             <Route path="/:restaurantId/admin/tables" element={<TableManager/>} />
             <Route path="/:restaurantId/OrderssPage" element={<OrderssPage/>} />
-            <Route path="/login/Admin/restaurantaccesspanel"element={<RestaurantAccessPanel />}/>
+            {/* ✅ Protected Owner Route */}
+<Route 
+  path="/login/Admin/restaurantaccesspanel" 
+  element={
+    <ProtectedOwnerRoute>
+      <RestaurantAccessPanel />
+    </ProtectedOwnerRoute>
+  } 
+/>
             <Route path="/:restaurantId/tables" element={<TableManager />} />
             <Route path="/:restaurantId/offer" element={<OfferPageWithProtection />} />
             <Route path="/:restaurantId/Chef" element={<Cheff />} />
@@ -128,7 +154,15 @@ function App() {
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
             {/* Staff Routes */}
-            <Route path="/login/Admin/restaurantaccesspanel"element={<RestaurantAccessPanel />}/>
+            {/* ✅ Protected Owner Route */}
+<Route 
+  path="/login/Admin/restaurantaccesspanel" 
+  element={
+    <ProtectedOwnerRoute>
+      <RestaurantAccessPanel />
+    </ProtectedOwnerRoute>
+  } 
+/>
             <Route
               path="/Admin/AttendancePage"
               element={

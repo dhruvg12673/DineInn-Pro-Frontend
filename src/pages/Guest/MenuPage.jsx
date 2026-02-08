@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './GuestMenu.css';
 import {  ArrowLeft } from 'lucide-react';
-const API_URL = 'https://dineinn-pro-backend.onrender.com';
+const API_URL = 'http://localhost:5000';
 
 const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
   const [menuData, setMenuData] = useState([]);
@@ -94,8 +94,8 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
   const filteredMenuData = menuData
     .map(category => {
       const filteredItems = category.items.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+        item.name?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
+        (item.description && item.description?.toLowerCase().includes(searchTerm?.toLowerCase()))
       );
       return { ...category, items: filteredItems };
     })
@@ -164,7 +164,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
                 >
                   <div className="item-info">
                     <h3 className="menu-item-name">{item.name}</h3>
-                    <div className="item-price">${parseFloat(item.price).toFixed(2)}</div>
+                    <div className="item-price">₹{parseFloat(item.price).toFixed(2)}</div>
                   </div>
                 </div>
               ))}
@@ -176,7 +176,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
         <div className="order-summary-bar">
           <div className="summary-content">
             <span className="summary-text">
-              {getTotalItems()} item{getTotalItems() !== 1 ? 's' : ''} • ${getTotalPrice().toFixed(2)}
+              {getTotalItems()} item{getTotalItems() !== 1 ? 's' : ''} • ₹{getTotalPrice().toFixed(2)}
             </span>
             <button
               className="place-order-btn"
@@ -210,7 +210,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
                   <strong>Ingredients:</strong> {selectedItem.ingredients}
                 </div>
               )}
-              <div className="modal-price">${parseFloat(selectedItem.price).toFixed(2)}</div>
+              <div className="modal-price">₹{parseFloat(selectedItem.price).toFixed(2)}</div>
               <QuantitySelector
                 onAddToCart={(quantity) => addToCart(selectedItem, quantity)}
                 price={selectedItem.price}
@@ -235,7 +235,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-info">
                     <h4>{item.name}</h4>
-                    <p>${parseFloat(item.price).toFixed(2)} each</p>
+                    <p>₹{parseFloat(item.price).toFixed(2)} each</p>
                   </div>
                   <div className="cart-item-controls">
                     <button
@@ -262,7 +262,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
               ))}
             </div>
             <div className="cart-total">
-              <strong>Total: ${getTotalPrice().toFixed(2)}</strong>
+              <strong>Total: ₹{getTotalPrice().toFixed(2)}</strong>
             </div>
             <button
               className="checkout-btn"
@@ -289,7 +289,7 @@ const MenuPage = ({ restaurantId, categoryid, tableNo, onOrderSuccess }) => {
             <h3 className="modal-title">Complete Your Order</h3>
             <div className="order-details">
               <p><strong>Total Items:</strong> {getTotalItems()}</p>
-              <p><strong>Total Price:</strong> ${getTotalPrice().toFixed(2)}</p>
+              <p><strong>Total Price:</strong> ₹{getTotalPrice().toFixed(2)}</p>
             </div>
             <input
               type="text"
@@ -331,7 +331,7 @@ const QuantitySelector = ({ onAddToCart, price }) => {
         <span className="quantity-display">{quantity}</span>
         <button className="quantity-btn" onClick={incrementQuantity} aria-label="Increase quantity">+</button>
       </div>
-      <div className="total-price">Total: ${(parseFloat(price) * quantity).toFixed(2)}</div>
+      <div className="total-price">Total: ₹{(parseFloat(price) * quantity).toFixed(2)}</div>
       <button className="add-to-cart-btn" onClick={() => onAddToCart(quantity)}>Add to Cart</button>
     </div>
   );

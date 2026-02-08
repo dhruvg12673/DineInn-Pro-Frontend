@@ -12,7 +12,7 @@ const AttendancePage = () => {
   const [error, setError] = useState('');
 
   const restaurantId = localStorage.getItem('restaurantId');
-  const API_BASE_URL = 'https://dineinn-pro-backend.onrender.com';
+  const API_BASE_URL = 'http://localhost:5000';
 
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -189,7 +189,7 @@ const AttendancePage = () => {
                       <tr key={record.id}>
                         <td className="staff-cell"><div className="staff-info"><div className="staff-avatar">{record.fullname.split(' ').map(n => n[0]).join('')}</div><span>{record.fullname}</span></div></td>
                         <td>{formatDate(record.checkin)}</td>
-                        <td><span className={`shift-badge ${record.shift ? record.shift.toLowerCase() : ''}`}>{record.shift}</span></td>
+                        <td><span className={`shift-badge ${record.shift ? record.shift?.toLowerCase() : ''}`}>{record.shift}</span></td>
                         <td className="time-cell">{formatTime(record.checkin)}</td>
                         <td className="time-cell">{record.checkout ? formatTime(record.checkout) : '-'}</td>
                         <td className="duration-cell">{calculateDuration(record.checkin, record.checkout)}</td>

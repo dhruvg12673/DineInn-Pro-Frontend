@@ -4,8 +4,8 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable'; // ✅ This defines autoTable
 import './Billing.css';
-import {  ArrowLeft } from 'lucide-react';
-const API_BASE = 'https://dineinn-pro-backend.onrender.com';
+import {  ArrowLeft, MessageCircle } from 'lucide-react';  
+const API_BASE = 'http://localhost:5000';
 
 const BillingPage = () => {
   const [lastBillUrl, setLastBillUrl] = useState(null);
@@ -167,7 +167,7 @@ const fetchActiveOrder = useCallback(async () => {
 
   const filteredItems = selectedCategory && menuData[selectedCategory]
     ? menuData[selectedCategory].filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        item.name?.toLowerCase().includes(searchTerm?.toLowerCase())
       )
     : [];
 
@@ -574,8 +574,8 @@ const handleSendWhatsApp = async () => {
     restaurantid: restaurantId,
     tablenumber: tableNumber,
     categoryid: tableCategoryId,
-    customername: billFormData.Name || `Table-${tableNumber}`,
-    customerno: billFormData.mobile || 'N/A',
+    customername: billFormData.Name || `${tableNumber}`,
+    customerno: billFormData.mobile || null,
     email_id: billFormData.email || null,
     deliverytype: orderType,
     paymenttype: 'pending',
@@ -912,8 +912,8 @@ const handleBillFormSubmit = async () => {
                   <input
                     type="radio"
                     name="payment"
-                    value={mode.toLowerCase()}
-                    checked={paymentMode === mode.toLowerCase()}
+                    value={mode?.toLowerCase()}
+                    checked={paymentMode === mode?.toLowerCase()}
                     onChange={(e) => setPaymentMode(e.target.value)}
                   />
                   <span>{mode}</span>
@@ -1273,7 +1273,9 @@ const handleBillFormSubmit = async () => {
             <div className="bill-modal-footer">
               <button className="footer-btn save">Save</button>
               <button className="footer-btn save-print" onClick={handleSaveAndPrint}>Save & Print</button>
-              <button onClick={handleSendWhatsApp} className="btn btn-success">Send on WhatsApp</button>
+              <button onClick={handleSendWhatsApp} className="footer-btn whatsapp">
+  <MessageCircle size={18} /> <span>WhatsApp</span>
+</button>
               <button className="footer-btn generate" onClick={handleBillFormSubmit}>Generate</button>
               <button className="footer-btn kot" onClick={() => handleSendKOT(false)}>KOT</button>
               <button className="footer-btn kot-print" onClick={() => handleSendKOT(true)}>KOT & Print</button>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import './orderlistStyles.css';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'https://dineinn-pro-backend.onrender.com';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -93,10 +93,10 @@ const OrderList = () => {
   const filteredOrders = useMemo(() => {
     if (!searchTerm) return orders;
     
-    const lowercaseSearch = searchTerm.toLowerCase();
+    const lowercaseSearch = searchTerm?.toLowerCase();
     return orders.filter(order =>
       Object.values(order).some(value =>
-        value && value.toString().toLowerCase().includes(lowercaseSearch)
+        value && value.toString()?.toLowerCase().includes(lowercaseSearch)
       )
     );
   }, [orders, searchTerm]);

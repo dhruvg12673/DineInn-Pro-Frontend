@@ -11,6 +11,7 @@ const MultiRestaurantLogin = () => {
   const location = useLocation();
 
   const [view, setView] = useState('login');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
     restaurantId: '',
@@ -49,10 +50,28 @@ const MultiRestaurantLogin = () => {
   };
 
   useEffect(() => {
+    // Pre-fill form if Remember Me was checked
+    const savedCreds = localStorage.getItem('rememberedCreds');
+    if (savedCreds) {
+      const { restaurantId, email, role } = JSON.parse(savedCreds);
+      setLoginForm(prev => ({ ...prev, restaurantId, email, role }));
+      setRememberMe(true);
+    }
+
+    // Auto-logout check: if no sessionSentinel (browser was closed) and rememberMe is false
+    const sentinel = sessionStorage.getItem('sessionSentinel');
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       const user = JSON.parse(savedUser);
-      console.log(`${user.restaurantid}/${user.role}`);
+      if (!sentinel && !user.rememberMe) {
+        // Browser was closed without Remember Me — clear session
+        localStorage.removeItem('user');
+        localStorage.removeItem('restaurantId');
+        return;
+      }
+      // Still valid session — navigate
+      if (user.isOwner) navigate('/login/Admin/restaurantaccesspanel');
+      else navigate(`/${user.restaurantid}/${user.role?.toLowerCase()}`);
     }
   }, [navigate]);
 
@@ -74,28 +93,31 @@ const MultiRestaurantLogin = () => {
 
     if (email === ownerEmail && restaurantId === ownerRestId && password === ownerPass) {
       console.log('✅ Owner bypass successful (DB call skipped)');
-      localStorage.setItem('user', JSON.stringify({
-        id: 'owner-session',
-        restaurantid: ownerRestId,
-        email: email,
-        role: 'Admin',
-        isOwner: true
-      }));
+      const ownerUser = { id: 'owner-session', restaurantid: ownerRestId, email, role: 'Admin', isOwner: true, rememberMe };
+      localStorage.setItem('user', JSON.stringify(ownerUser));
+      sessionStorage.setItem('sessionSentinel', '1');
+      if (rememberMe) {
+        localStorage.setItem('rememberedCreds', JSON.stringify({ restaurantId, email, role }));
+      } else {
+        localStorage.removeItem('rememberedCreds');
+      }
       navigate('/login/Admin/restaurantaccesspanel');
       setIsLoading(false);
       return;
     }
 
-    // 3. STANDARD LOGIN (Only runs if the owner check fails)
+    // 3. STANDARD LOGIN
     try {
-      const response = await axios.post(`${CLOUD_API}/api/login`, {
-        restaurantId,
-        email,
-        password
-      });
-      const user = response.data.user;
+      const response = await axios.post(`${CLOUD_API}/api/login`, { restaurantId, email, password });
+      const user = { ...response.data.user, rememberMe };
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('restaurantId', user.restaurantid);
+      sessionStorage.setItem('sessionSentinel', '1');
+      if (rememberMe) {
+        localStorage.setItem('rememberedCreds', JSON.stringify({ restaurantId, email, role }));
+      } else {
+        localStorage.removeItem('rememberedCreds');
+      }
       navigate(`/${user.restaurantid}/${user.role?.toLowerCase()}`);
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials');
@@ -142,7 +164,8 @@ const MultiRestaurantLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      await axios.post(`${CLOUD_API}/api/forgot-password/verify-otp`, { email: forgotEmail, otp });
+      // ✅ FIX: Must use LOCAL_API — OTP was stored in local server memory
+      await axios.post(`${LOCAL_API}/api/forgot-password/verify-otp`, { email: forgotEmail, otp });
       setMessage('OTP verified successfully. You can now reset your password.');
       setForgotStep(3);
     } catch (err) {
@@ -165,7 +188,8 @@ const MultiRestaurantLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      await axios.post(`${CLOUD_API}/api/forgot-password/reset-password`, { email: forgotEmail, otp, password: newPassword });
+      // ✅ FIX: Must use LOCAL_API — OTP session lives on local server
+      await axios.post(`${LOCAL_API}/api/forgot-password/reset-password`, { email: forgotEmail, otp, password: newPassword });
       setMessage('Your password has been updated successfully! Redirecting to login...');
       setTimeout(() => {
         setView('login');
@@ -257,7 +281,16 @@ const MultiRestaurantLogin = () => {
           <label className="field-label">Password *</label>
           <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} placeholder="Enter your password" className="field-input" required />
         </div>
-        <div className="forgot-password">
+        <div className="remember-forgot-row">
+          <label className="remember-me-label">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="remember-me-checkbox"
+            />
+            Remember me
+          </label>
           <button onClick={() => { setView('forgot'); resetState(); }} className="forgot-link">Forgot password?</button>
         </div>
         <button onClick={handleLogin} className="submit-button" disabled={isLoading}>

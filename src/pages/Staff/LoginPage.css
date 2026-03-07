@@ -164,9 +164,28 @@
   margin-top: 0.25rem;
 }
 
-/* Forgot Password */
-.forgot-password {
-  text-align: right;
+/* Remember Me + Forgot Password row */
+.remember-forgot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remember-me-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-me-checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #4f46e5;
+  cursor: pointer;
 }
 
 .forgot-link {

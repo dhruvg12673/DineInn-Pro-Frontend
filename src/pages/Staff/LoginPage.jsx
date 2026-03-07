@@ -3,12 +3,15 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './LoginPage.css';
 
+const CLOUD_API = 'https://dineinn-pro-backend.onrender.com'; // All data/CRUD operations
+const LOCAL_API = 'http://localhost:5000'; // Mailing operations only
+
 const MultiRestaurantLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [view, setView] = useState('login'); 
-  
+  const [view, setView] = useState('login');
+
   const [loginForm, setLoginForm] = useState({
     restaurantId: '',
     email: '',
@@ -21,7 +24,7 @@ const MultiRestaurantLogin = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +34,7 @@ const MultiRestaurantLogin = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const viewParam = queryParams.get('view');
-    
+
     if (viewParam === 'forgot') {
       setView('forgot');
       setMessage('Please enter your email to reset your password');
@@ -61,7 +64,7 @@ const MultiRestaurantLogin = () => {
       setError('Please fill in all required fields');
       return;
     }
-    
+
     setIsLoading(true);
 
     // 1. Correctly reference the REACT_APP_ variables from your .env
@@ -71,12 +74,12 @@ const MultiRestaurantLogin = () => {
 
     if (email === ownerEmail && restaurantId === ownerRestId && password === ownerPass) {
       console.log('✅ Owner bypass successful (DB call skipped)');
-      localStorage.setItem('user', JSON.stringify({ 
-        id: 'owner-session', 
-        restaurantid: ownerRestId, 
-        email: email, 
+      localStorage.setItem('user', JSON.stringify({
+        id: 'owner-session',
+        restaurantid: ownerRestId,
+        email: email,
         role: 'Admin',
-        isOwner: true 
+        isOwner: true
       }));
       navigate('/login/Admin/restaurantaccesspanel');
       setIsLoading(false);
@@ -85,10 +88,10 @@ const MultiRestaurantLogin = () => {
 
     // 3. STANDARD LOGIN (Only runs if the owner check fails)
     try {
-      const response = await axios.post('https://dineinn-pro-backend.onrender.com/api/login', { 
-        restaurantId, 
-        email, 
-        password 
+      const response = await axios.post(`${CLOUD_API}/api/login`, {
+        restaurantId,
+        email,
+        password
       });
       const user = response.data.user;
       localStorage.setItem('user', JSON.stringify(user));
@@ -120,7 +123,7 @@ const MultiRestaurantLogin = () => {
     setError('');
     setMessage('');
     try {
-      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/send-otp', { email: forgotEmail });
+      await axios.post(`${LOCAL_API}/api/forgot-password/send-otp`, { email: forgotEmail });
       setMessage(`An OTP has been sent to ${forgotEmail}.`);
       setForgotStep(2);
     } catch (err) {
@@ -139,7 +142,7 @@ const MultiRestaurantLogin = () => {
     setIsLoading(true);
     setError('');
     try {
-      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/verify-otp', { email: forgotEmail, otp });
+      await axios.post(`${CLOUD_API}/api/forgot-password/verify-otp`, { email: forgotEmail, otp });
       setMessage('OTP verified successfully. You can now reset your password.');
       setForgotStep(3);
     } catch (err) {
@@ -156,13 +159,13 @@ const MultiRestaurantLogin = () => {
       return;
     }
     if (newPassword.length < 6) {
-        setError('Password must be at least 6 characters long.');
-        return;
+      setError('Password must be at least 6 characters long.');
+      return;
     }
     setIsLoading(true);
     setError('');
     try {
-      await axios.post('https://dineinn-pro-backend.onrender.com/api/forgot-password/reset-password', { email: forgotEmail, otp, password: newPassword });
+      await axios.post(`${CLOUD_API}/api/forgot-password/reset-password`, { email: forgotEmail, otp, password: newPassword });
       setMessage('Your password has been updated successfully! Redirecting to login...');
       setTimeout(() => {
         setView('login');
@@ -176,7 +179,7 @@ const MultiRestaurantLogin = () => {
       setIsLoading(false);
     }
   };
-  
+
   const resetState = () => {
     setError('');
     setMessage('');
@@ -189,87 +192,87 @@ const MultiRestaurantLogin = () => {
 
   const renderForgotPasswordView = () => (
     <div className="forgot-password-view">
-        {forgotStep === 1 && (
-             <form onSubmit={handleSendOtp}>
-                <h2 className="welcome-title">DineInnPro</h2>
-                <p className="form-subtitle">Enter your email to receive an OTP.</p>
-                <div className="field-group">
-                    <label className="field-label">Email Address</label>
-                    <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className="field-input" placeholder="you@example.com" required />
-                </div>
-                <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Sending...' : 'Send OTP'}</button>
-            </form>
-        )}
-        {forgotStep === 2 && (
-            <form onSubmit={handleVerifyOtp}>
-                <h2 className="welcome-title">Verify OTP</h2>
-                <p className="form-subtitle">Check your email for the 6-digit code.</p>
-                <div className="field-group">
-                    <label className="field-label">OTP</label>
-                    <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} className="field-input" placeholder="Enter OTP" required />
-                </div>
-                <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Verifying...' : 'Verify OTP'}</button>
-            </form>
-        )}
-        {forgotStep === 3 && (
-            <form onSubmit={handleResetPassword}>
-                <h2 className="welcome-title">Reset Password</h2>
-                <p className="form-subtitle">Create a new, strong password.</p>
-                <div className="field-group">
-                    <label className="field-label">New Password</label>
-                    <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="field-input" placeholder="New Password" required />
-                </div>
-                <div className="field-group">
-                    <label className="field-label">Confirm Password</label>
-                    <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="field-input" placeholder="Confirm Password" required />
-                </div>
-                <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Resetting...' : 'Reset Password'}</button>
-            </form>
-        )}
-        <button onClick={() => { setView('login'); resetState(); navigate('/login', { replace: true }); }} className="back-to-login-link">
-            Back to Login
-        </button>
+      {forgotStep === 1 && (
+        <form onSubmit={handleSendOtp}>
+          <h2 className="welcome-title">DineInnPro</h2>
+          <p className="form-subtitle">Enter your email to receive an OTP.</p>
+          <div className="field-group">
+            <label className="field-label">Email Address</label>
+            <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className="field-input" placeholder="you@example.com" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Sending...' : 'Send OTP'}</button>
+        </form>
+      )}
+      {forgotStep === 2 && (
+        <form onSubmit={handleVerifyOtp}>
+          <h2 className="welcome-title">Verify OTP</h2>
+          <p className="form-subtitle">Check your email for the 6-digit code.</p>
+          <div className="field-group">
+            <label className="field-label">OTP</label>
+            <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} className="field-input" placeholder="Enter OTP" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Verifying...' : 'Verify OTP'}</button>
+        </form>
+      )}
+      {forgotStep === 3 && (
+        <form onSubmit={handleResetPassword}>
+          <h2 className="welcome-title">Reset Password</h2>
+          <p className="form-subtitle">Create a new, strong password.</p>
+          <div className="field-group">
+            <label className="field-label">New Password</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="field-input" placeholder="New Password" required />
+          </div>
+          <div className="field-group">
+            <label className="field-label">Confirm Password</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="field-input" placeholder="Confirm Password" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Resetting...' : 'Reset Password'}</button>
+        </form>
+      )}
+      <button onClick={() => { setView('login'); resetState(); navigate('/login', { replace: true }); }} className="back-to-login-link">
+        Back to Login
+      </button>
     </div>
   );
 
   const renderLoginView = () => (
     <>
-        <h1 className="welcome-title">Welcome Back</h1>
-        <div className="form-fields">
-            <div className="field-group">
-              <label className="field-label">Restaurant ID *</label>
-              <input type="text" name="restaurantId" value={loginForm.restaurantId} onChange={handleLoginInputChange} placeholder="e.g., pizzahub" className="field-input" required />
-            </div>
-            <div className="field-group">
-              <label className="field-label">Email Address *</label>
-              <input type="email" name="email" value={loginForm.email} onChange={handleLoginInputChange} placeholder="Enter your email" className="field-input" required />
-            </div>
-            <div className="field-group">
-              <label className="field-label">Role *</label>
-              <select name="role" value={loginForm.role} onChange={handleLoginInputChange} className="field-input">
-                {roles.map(role => (<option key={role} value={role}>{role}</option>))}
-              </select>
-            </div>
-            <div className="field-group">
-              <label className="field-label">Password *</label>
-              <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} placeholder="Enter your password" className="field-input" required />
-            </div>
-            <div className="forgot-password">
-              <button onClick={() => { setView('forgot'); resetState(); }} className="forgot-link">Forgot password?</button>
-            </div>
-            <button onClick={handleLogin} className="submit-button" disabled={isLoading}>
-              {isLoading ? 'Logging In...' : 'Login'}
-            </button>
+      <h1 className="welcome-title">Welcome Back</h1>
+      <div className="form-fields">
+        <div className="field-group">
+          <label className="field-label">Restaurant ID *</label>
+          <input type="text" name="restaurantId" value={loginForm.restaurantId} onChange={handleLoginInputChange} placeholder="e.g., pizzahub" className="field-input" required />
         </div>
-        <div className="quick-login">
-            <h3 className="quick-login-title">Quick Demo Login</h3>
-            <div className="quick-login-grid">
-              <button onClick={() => handleQuickLogin('Admin')} className="quick-login-button admin">Login as Admin</button>
-              <button onClick={() => handleQuickLogin('Manager')} className="quick-login-button manager">Login as Manager</button>
-              <button onClick={() => handleQuickLogin('Chef')} className="quick-login-button chef">Login as Chef</button>
-              <button onClick={() => handleQuickLogin('Waiter')} className="quick-login-button waiter">Login as Waiter</button>
-            </div>
+        <div className="field-group">
+          <label className="field-label">Email Address *</label>
+          <input type="email" name="email" value={loginForm.email} onChange={handleLoginInputChange} placeholder="Enter your email" className="field-input" required />
         </div>
+        <div className="field-group">
+          <label className="field-label">Role *</label>
+          <select name="role" value={loginForm.role} onChange={handleLoginInputChange} className="field-input">
+            {roles.map(role => (<option key={role} value={role}>{role}</option>))}
+          </select>
+        </div>
+        <div className="field-group">
+          <label className="field-label">Password *</label>
+          <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} placeholder="Enter your password" className="field-input" required />
+        </div>
+        <div className="forgot-password">
+          <button onClick={() => { setView('forgot'); resetState(); }} className="forgot-link">Forgot password?</button>
+        </div>
+        <button onClick={handleLogin} className="submit-button" disabled={isLoading}>
+          {isLoading ? 'Logging In...' : 'Login'}
+        </button>
+      </div>
+      <div className="quick-login">
+        <h3 className="quick-login-title">Quick Demo Login</h3>
+        <div className="quick-login-grid">
+          <button onClick={() => handleQuickLogin('Admin')} className="quick-login-button admin">Login as Admin</button>
+          <button onClick={() => handleQuickLogin('Manager')} className="quick-login-button manager">Login as Manager</button>
+          <button onClick={() => handleQuickLogin('Chef')} className="quick-login-button chef">Login as Chef</button>
+          <button onClick={() => handleQuickLogin('Waiter')} className="quick-login-button waiter">Login as Waiter</button>
+        </div>
+      </div>
     </>
   );
 
@@ -284,9 +287,9 @@ const MultiRestaurantLogin = () => {
           </div>
         </div>
         <div className="form-section">
-            {error && <div className="lo-error-message">{error}</div>}
-            {message && <div className="success-message">{message}</div>}
-            {view === 'login' ? renderLoginView() : renderForgotPasswordView()}
+          {error && <div className="lo-error-message">{error}</div>}
+          {message && <div className="success-message">{message}</div>}
+          {view === 'login' ? renderLoginView() : renderForgotPasswordView()}
         </div>
       </div>
     </div>

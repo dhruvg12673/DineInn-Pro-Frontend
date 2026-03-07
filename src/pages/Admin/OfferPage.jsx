@@ -7,37 +7,40 @@ import html2canvas from 'html2canvas';
 import './OfferPage.css';
 import axios from 'axios';
 
+const CLOUD_API = 'https://dineinn-pro-backend.onrender.com'; // All data/CRUD operations
+const LOCAL_API = 'http://localhost:5000'; // Mailing operations only
+
 // The hidden component for generating the PDF layout.
 const OfferPDF = ({ offerData, restaurantName }) => (
   <div style={{ position: 'absolute', left: '-10000px', top: 0, width: '595px', padding: '20px', backgroundColor: 'lightpink' }}>
     <div style={{ padding: '20px', border: '1px solid #dee2e6', borderRadius: '8px', backgroundColor: 'white' }}>
-        <h1 style={{ textAlign: 'center', color: '#495057', marginBottom: '20px' }}>{restaurantName}</h1>
-        <h2 style={{ color: '#0891b2', borderBottom: '2px solid #0891b2', paddingBottom: '10px' }}>{offerData.title}</h2>
-        <p style={{ marginTop: '20px', fontStyle: 'italic' }}>"{offerData.description}"</p>
+      <h1 style={{ textAlign: 'center', color: '#495057', marginBottom: '20px' }}>{restaurantName}</h1>
+      <h2 style={{ color: '#0891b2', borderBottom: '2px solid #0891b2', paddingBottom: '10px' }}>{offerData.title}</h2>
+      <p style={{ marginTop: '20px', fontStyle: 'italic' }}>"{offerData.description}"</p>
 
-        {offerData.image && (
-            <div style={{ margin: '20px 0', textAlign: 'center' }}>
-                <img src={offerData.image} alt="Offer" style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} />
-            </div>
-        )}
-
-        <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-            <h3 style={{ marginBottom: '15px' }}>Offer Details:</h3>
-            {offerData.discountType === 'percentage' && (
-                <p><strong>Discount:</strong> {offerData.discountValue}% off</p>
-            )}
-            {offerData.discountType === 'fixed' && (
-                <p><strong>Discount:</strong> ₹{offerData.discountValue} off</p>
-            )}
-            {offerData.discountType === 'custom' && (
-                <p><strong>Offer:</strong> {offerData.customText}</p>
-            )}
-            <p><strong>Valid Till:</strong> {new Date(offerData.validTill).toLocaleDateString('en-IN')}</p>
+      {offerData.image && (
+        <div style={{ margin: '20px 0', textAlign: 'center' }}>
+          <img src={offerData.image} alt="Offer" style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px' }} />
         </div>
+      )}
 
-        <p style={{ marginTop: '30px', fontSize: '12px', color: '#6c757d', textAlign: 'center' }}>
-            Terms and conditions apply. This is a promotional offer.
-        </p>
+      <div style={{ marginTop: '30px', padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
+        <h3 style={{ marginBottom: '15px' }}>Offer Details:</h3>
+        {offerData.discountType === 'percentage' && (
+          <p><strong>Discount:</strong> {offerData.discountValue}% off</p>
+        )}
+        {offerData.discountType === 'fixed' && (
+          <p><strong>Discount:</strong> ₹{offerData.discountValue} off</p>
+        )}
+        {offerData.discountType === 'custom' && (
+          <p><strong>Offer:</strong> {offerData.customText}</p>
+        )}
+        <p><strong>Valid Till:</strong> {new Date(offerData.validTill).toLocaleDateString('en-IN')}</p>
+      </div>
+
+      <p style={{ marginTop: '30px', fontSize: '12px', color: '#6c757d', textAlign: 'center' }}>
+        Terms and conditions apply. This is a promotional offer.
+      </p>
     </div>
   </div>
 );
@@ -64,14 +67,14 @@ const RestaurantAdminPanel = ({ restaurantId }) => {
 
   useEffect(() => {
     const fetchRestaurantDetails = async () => {
-        if (!restaurantId) return;
-        try {
-            const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
-            setRestaurantName(res.data.name || 'Your Restaurant');
-        } catch (err) {
-            console.error('Failed to fetch restaurant details', err);
-            setRestaurantName('Your Restaurant');
-        }
+      if (!restaurantId) return;
+      try {
+        const res = await axios.get(`${CLOUD_API}/api/restaurants/${restaurantId}`);
+        setRestaurantName(res.data.name || 'Your Restaurant');
+      } catch (err) {
+        console.error('Failed to fetch restaurant details', err);
+        setRestaurantName('Your Restaurant');
+      }
     };
     fetchRestaurantDetails();
   }, [restaurantId]);
@@ -85,7 +88,7 @@ const RestaurantAdminPanel = ({ restaurantId }) => {
 
       try {
         setLoading(true);
-        const response = await axios.get(`https://dineinn-pro-backend.onrender.com/api/customers?restaurantId=${restaurantId}`);
+        const response = await axios.get(`${CLOUD_API}/api/customers?restaurantId=${restaurantId}`);
         setCustomers(response.data);
         setError(null);
       } catch (e) {
@@ -115,77 +118,77 @@ const RestaurantAdminPanel = ({ restaurantId }) => {
     }
   };
   const waitForImagesToLoad = async (element) => {
-  const images = element.querySelectorAll('img');
-  const promises = [];
+    const images = element.querySelectorAll('img');
+    const promises = [];
 
-  images.forEach((img) => {
-    if (!img.complete || img.naturalHeight === 0) {
-      promises.push(
-        new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        })
-      );
-    }
-  });
-
-  await Promise.all(promises);
-};
-
-
-const handleSendOffer = async () => {
-  const pdfElement = pdfRef.current?.firstChild;
-
-  if (!pdfElement) {
-    console.error("PDF content element for capture not found.");
-    return;
-  }
-
-  const originalStyle = pdfElement.style.cssText;
-  pdfElement.style.position = 'fixed';
-  pdfElement.style.zIndex = '-9999';
-  pdfElement.style.left = '0';
-  pdfElement.style.top = '0';
-
-  try {
-    await waitForImagesToLoad(pdfElement);
-    await new Promise(resolve => setTimeout(resolve, 50));
-
-    const canvas = await html2canvas(pdfElement, {
-      useCORS: true,
-      scale: 2,
+    images.forEach((img) => {
+      if (!img.complete || img.naturalHeight === 0) {
+        promises.push(
+          new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve;
+          })
+        );
+      }
     });
 
-    const imgData = canvas.toDataURL('image/png');
+    await Promise.all(promises);
+  };
 
-    if (!imgData || imgData.length < 1000) {
-      throw new Error("Canvas generated an empty image.");
+
+  const handleSendOffer = async () => {
+    const pdfElement = pdfRef.current?.firstChild;
+
+    if (!pdfElement) {
+      console.error("PDF content element for capture not found.");
+      return;
     }
 
-    const pdf = new jsPDF('p', 'px', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const originalStyle = pdfElement.style.cssText;
+    pdfElement.style.position = 'fixed';
+    pdfElement.style.zIndex = '-9999';
+    pdfElement.style.left = '0';
+    pdfElement.style.top = '0';
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+    try {
+      await waitForImagesToLoad(pdfElement);
+      await new Promise(resolve => setTimeout(resolve, 50));
 
-    const selectedEmails = customers.map(c => c.email).filter(Boolean);
+      const canvas = await html2canvas(pdfElement, {
+        useCORS: true,
+        scale: 2,
+      });
 
-    await axios.post('https://dineinn-pro-backend.onrender.com/api/send-offer-email', {
-      pdf: pdfBase64,
-      emails: selectedEmails,
-      offerTitle: formData.title,
-    });
+      const imgData = canvas.toDataURL('image/png');
 
-    setShowSnackbar(true);
-    setTimeout(() => setShowSnackbar(false), 3000);
+      if (!imgData || imgData.length < 1000) {
+        throw new Error("Canvas generated an empty image.");
+      }
 
-  } catch (error) {
-    console.error("Failed during PDF generation or sending:", error);
-  } finally {
-    pdfElement.style.cssText = originalStyle;
-  }
-};
+      const pdf = new jsPDF('p', 'px', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+      const selectedEmails = customers.map(c => c.email).filter(Boolean);
+
+      await axios.post(`${LOCAL_API}/api/send-offer-email`, {
+        pdf: pdfBase64,
+        emails: selectedEmails,
+        offerTitle: formData.title,
+      });
+
+      setShowSnackbar(true);
+      setTimeout(() => setShowSnackbar(false), 3000);
+
+    } catch (error) {
+      console.error("Failed during PDF generation or sending:", error);
+    } finally {
+      pdfElement.style.cssText = originalStyle;
+    }
+  };
 
 
 
@@ -218,33 +221,33 @@ const handleSendOffer = async () => {
           <Tag size={20} />
           Create New Offer
         </h2>
-        
+
         <div className="form-grid">
           <div className="form-row">
-  <div className="form-group">
-    <label className="form-label">Offer Title *</label>
-    <input
-      type="text"
-      name="title"
-      value={formData.title}
-      onChange={handleInputChange}
-      placeholder="e.g., Weekend Special Deal"
-      className="form-input"
-      required
-    />
-  </div>
-  <div className="form-group">
-    <label className="form-label">Valid Till *</label>
-    <input
-      type="date"
-      name="validTill"
-      value={formData.validTill}
-      onChange={handleInputChange}
-      className="form-input"
-      required
-    />
-  </div>
-</div>
+            <div className="form-group">
+              <label className="form-label">Offer Title *</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="e.g., Weekend Special Deal"
+                className="form-input"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Valid Till *</label>
+              <input
+                type="date"
+                name="validTill"
+                value={formData.validTill}
+                onChange={handleInputChange}
+                className="form-input"
+                required
+              />
+            </div>
+          </div>
 
           <div className="form-group full-width">
             <label className="form-label">Description *</label>
@@ -430,12 +433,12 @@ export default function OfferPageWithProtection() {
 
   useEffect(() => {
     const fetchPlan = async () => {
-        if (!restaurantId) {
-            setLoading(false);
-            return;
-        }
+      if (!restaurantId) {
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await axios.get(`https://dineinn-pro-backend.onrender.com/api/restaurants/${restaurantId}`);
+        const res = await axios.get(`${CLOUD_API}/api/restaurants/${restaurantId}`);
         setCurrentPlan(res.data.plan);
       } catch (err) {
         console.error('Failed to fetch restaurant plan', err);

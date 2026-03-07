@@ -3,8 +3,8 @@ import axios from 'axios';
 import { Plus, Trash2, MapPin, Edit3, X } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './TableManagementPage.css';
-import {  ArrowLeft } from 'lucide-react';
-const API_BASE = 'https://dineinn-pro-backend.onrender.com'; // Adjust if your backend URL differs
+import { ArrowLeft } from 'lucide-react';
+const CLOUD_API = 'https://dineinn-pro-backend.onrender.com'; // All data/CRUD operations
 
 const TableManagementPage = () => {
   const { restaurantId } = useParams();
@@ -63,9 +63,9 @@ const TableManagementPage = () => {
     }
 
     try {
-      const catRes = await axios.get(`${API_BASE}/api/categories`, { params: { restaurantId } });
-      const tableRes = await axios.get(`${API_BASE}/api/tables`, { params: { restaurantId } });
-      
+      const catRes = await axios.get(`${CLOUD_API}/api/categories`, { params: { restaurantId } });
+      const tableRes = await axios.get(`${CLOUD_API}/api/tables`, { params: { restaurantId } });
+
       const categoriesData = catRes.data;
       const tablesData = tableRes.data;
 
@@ -105,7 +105,7 @@ const TableManagementPage = () => {
     fetchData(); // Initial fetch
 
     const interval = setInterval(() => {
-        fetchData(); // Subsequent polling
+      fetchData(); // Subsequent polling
     }, 15000);
 
     return () => clearInterval(interval); // Cleanup on unmount
@@ -116,7 +116,7 @@ const TableManagementPage = () => {
   const addCategory = async () => {
     if (!modalData.newCategoryName.trim()) return;
     try {
-      await axios.post(`${API_BASE}/api/categories`, {
+      await axios.post(`${CLOUD_API}/api/categories`, {
         restaurantId,
         name: modalData.newCategoryName.trim(),
       });
@@ -131,7 +131,7 @@ const TableManagementPage = () => {
   const updateCategoryName = async () => {
     if (!modalData.categoryName.trim() || !modalData.categoryId) return;
     try {
-      await axios.put(`${API_BASE}/api/categories/${modalData.categoryId}`, {
+      await axios.put(`${CLOUD_API}/api/categories/${modalData.categoryId}`, {
         name: modalData.categoryName.trim(),
       });
       await fetchData();
@@ -145,10 +145,10 @@ const TableManagementPage = () => {
   const deleteCategory = async () => {
     if (!modalData.categoryId) return;
     try {
-      await axios.delete(`${API_BASE}/api/categories/${modalData.categoryId}`);
+      await axios.delete(`${CLOUD_API}/api/categories/${modalData.categoryId}`);
       await fetchData();
       closeModal('deleteCategory');
-    } catch (error)      {
+    } catch (error) {
       console.error('Failed to delete category:', error);
       alert('Failed to delete category');
     }
@@ -161,7 +161,7 @@ const TableManagementPage = () => {
     const newTableNumber = category.tables.length + 1;
     const newTableName = `Table ${newTableNumber}`;
     try {
-      await axios.post(`${API_BASE}/api/tables`, {
+      await axios.post(`${CLOUD_API}/api/tables`, {
         restaurantId,
         tableNumber: newTableName,
         categoryId,
@@ -176,7 +176,7 @@ const TableManagementPage = () => {
   const updateTableName = async () => {
     if (!modalData.tableName.trim() || !modalData.selectedTableId) return;
     try {
-      await axios.put(`${API_BASE}/api/tables/${modalData.selectedTableId}`, {
+      await axios.put(`${CLOUD_API}/api/tables/${modalData.selectedTableId}`, {
         tableNumber: modalData.tableName.trim(),
         categoryId: modalData.selectedCategoryId,
       });
@@ -191,7 +191,7 @@ const TableManagementPage = () => {
   const deleteTable = async () => {
     if (!modalData.selectedTableId) return;
     try {
-      await axios.delete(`${API_BASE}/api/tables/${modalData.selectedTableId}`);
+      await axios.delete(`${CLOUD_API}/api/tables/${modalData.selectedTableId}`);
       await fetchData();
       closeModal('deleteTable');
     } catch (error) {
@@ -202,15 +202,15 @@ const TableManagementPage = () => {
 
   // In TableManager.jsx
 
-// In TableManager.jsx
+  // In TableManager.jsx
 
-const handleTableClick = (table, tableCategoryId) => {
-  // Navigate to billing for any table, passing both table name and its category ID
-  // We use a specific name 'tableCategoryId' to avoid confusion
-  navigate(
-    `/admin/billing?tableNumber=${encodeURIComponent(table.name)}&tableCategoryId=${encodeURIComponent(tableCategoryId)}`
-  );
-};
+  const handleTableClick = (table, tableCategoryId) => {
+    // Navigate to billing for any table, passing both table name and its category ID
+    // We use a specific name 'tableCategoryId' to avoid confusion
+    navigate(
+      `/admin/billing?tableNumber=${encodeURIComponent(table.name)}&tableCategoryId=${encodeURIComponent(tableCategoryId)}`
+    );
+  };
 
   const Modal = ({ isOpen, onClose, title, children }) => {
     if (!isOpen) return null;
@@ -283,9 +283,9 @@ const handleTableClick = (table, tableCategoryId) => {
             <p>Loading tables...</p>
           </div>
         ) : error ? (
-            <div className="empty-state">
-                <p>{error}</p>
-            </div>
+          <div className="empty-state">
+            <p>{error}</p>
+          </div>
         ) : categories.length > 0 ? (
           <div className="categories-grid">
             {categories.map((category) => (
@@ -488,7 +488,7 @@ const handleTableClick = (table, tableCategoryId) => {
           </div>
         </div>
       </Modal>
-      
+
       <Modal isOpen={modals.addCategory} onClose={() => closeModal('addCategory')} title="Add New Category">
         <div className="modal-form">
           <div>

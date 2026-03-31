@@ -65,7 +65,7 @@ pipeline {
                     docker rm %IMAGE_NAME% >nul 2>&1 || ver >nul
                     
                     :: Run new frontend on port 80
-                    docker run -d --name %IMAGE_NAME% -p 80:80 %DOCKER_USER%/%IMAGE_NAME%:latest
+                    docker run -d --name %IMAGE_NAME% -p 3000:80 %DOCKER_USER%/%IMAGE_NAME%:latest
                 """
             }
         }

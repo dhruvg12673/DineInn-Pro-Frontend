@@ -1,0 +1,84 @@
+/* scanner_modal.css */
+
+.scanner-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.scanner-modal-content {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.scanner-modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1.5rem;
+}
+
+#barcode-reader {
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border: 4px solid #f3f4f6;
+}
+
+#barcode-reader video {
+  width: 100%;
+  height: auto;
+}
+
+.scanner-close-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px 0 rgba(220, 38, 38, 0.2);
+}
+
+.scanner-close-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px 0 rgba(220, 38, 38, 0.3);
+}
+
+/* Style for the new Scan button in the main form */
+.scan-barcode-btn {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px 0 rgba(124, 58, 237, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scan-barcode-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px 0 rgba(124, 58, 237, 0.3);
+}

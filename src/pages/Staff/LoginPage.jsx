@@ -1,0 +1,332 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import './LoginPage.css';
+
+const CLOUD_API = 'https://dineinn-pro-backend.onrender.com'; // All data/CRUD operations
+const LOCAL_API = 'http://localhost:5000'; // Mailing operations only
+
+const MultiRestaurantLogin = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [view, setView] = useState('login');
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const [loginForm, setLoginForm] = useState({
+    restaurantId: '',
+    email: '',
+    password: '',
+    role: 'Admin'
+  });
+
+  const [forgotStep, setForgotStep] = useState(1);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const roles = ['StoreManager', 'Owner', 'Chef', 'Waiter', 'Billing'];
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const viewParam = queryParams.get('view');
+
+    if (viewParam === 'forgot') {
+      setView('forgot');
+      setMessage('Please enter your email to reset your password');
+    }
+  }, [location]);
+
+  const handleLoginInputChange = (e) => {
+    const { name, value } = e.target;
+    setLoginForm(prev => ({ ...prev, [name]: value }));
+    if (error) setError('');
+    if (message) setMessage('');
+  };
+
+  useEffect(() => {
+    // Pre-fill form if Remember Me was checked
+    const savedCreds = localStorage.getItem('rememberedCreds');
+    if (savedCreds) {
+      const { restaurantId, email, role } = JSON.parse(savedCreds);
+      setLoginForm(prev => ({ ...prev, restaurantId, email, role }));
+      setRememberMe(true);
+    }
+
+    // Auto-logout check: if no sessionSentinel (browser was closed) and rememberMe is false
+    const sentinel = sessionStorage.getItem('sessionSentinel');
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      if (!sentinel && !user.rememberMe) {
+        // Browser was closed without Remember Me — clear session
+        localStorage.removeItem('user');
+        localStorage.removeItem('restaurantId');
+        return;
+      }
+      // Still valid session — navigate
+      if (user.isOwner) navigate('/login/Admin/restaurantaccesspanel');
+      else navigate(`/${user.restaurantid}/${user.role?.toLowerCase()}`);
+    }
+  }, [navigate]);
+
+  // ✅ SINGLE handleLogin Function with OWNER BYPASS
+  const handleLogin = async () => {
+    const { restaurantId, email, password, role } = loginForm;
+
+    if (!restaurantId || !email || !password || !role) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // 1. Correctly reference the REACT_APP_ variables from your .env
+    const ownerEmail = process.env.REACT_APP_OWNER_MAIL;
+    const ownerPass = process.env.REACT_APP_OWNER_PASSWORD;
+    const ownerRestId = process.env.REACT_APP_OWNER_RESTAURANT_ID;
+
+    if (email === ownerEmail && restaurantId === ownerRestId && password === ownerPass) {
+      console.log('✅ Owner bypass successful (DB call skipped)');
+      const ownerUser = { id: 'owner-session', restaurantid: ownerRestId, email, role: 'Admin', isOwner: true, rememberMe };
+      localStorage.setItem('user', JSON.stringify(ownerUser));
+      sessionStorage.setItem('sessionSentinel', '1');
+      if (rememberMe) {
+        localStorage.setItem('rememberedCreds', JSON.stringify({ restaurantId, email, role }));
+      } else {
+        localStorage.removeItem('rememberedCreds');
+      }
+      navigate('/login/Admin/restaurantaccesspanel');
+      setIsLoading(false);
+      return;
+    }
+
+    // 3. STANDARD LOGIN
+    try {
+      const response = await axios.post(`${CLOUD_API}/api/login`, { restaurantId, email, password });
+      const user = { ...response.data.user, rememberMe };
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('restaurantId', user.restaurantid);
+      sessionStorage.setItem('sessionSentinel', '1');
+      if (rememberMe) {
+        localStorage.setItem('rememberedCreds', JSON.stringify({ restaurantId, email, role }));
+      } else {
+        localStorage.removeItem('rememberedCreds');
+      }
+      navigate(`/${user.restaurantid}/${user.role?.toLowerCase()}`);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Invalid credentials');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // --- UNTOUCHED ORIGINAL FUNCTIONS ---
+
+  const handleQuickLogin = (role, email = 'demo@example.com') => {
+    const demoData = { restaurantId: 'demo-restaurant', email, password: 'demo123', role };
+    localStorage.setItem('user', JSON.stringify({ id: 'demo-id', restaurantid: demoData.restaurantId, email: demoData.email, role: demoData.role }));
+    localStorage.setItem('restaurantId', demoData.restaurantId);
+    navigate(`/${demoData.restaurantId}/${role?.toLowerCase()}`);
+  };
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail) {
+      setError('Please enter your email address.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    setMessage('');
+    try {
+      await axios.post(`${LOCAL_API}/api/forgot-password/send-otp`, { email: forgotEmail });
+      setMessage(`An OTP has been sent to ${forgotEmail}.`);
+      setForgotStep(2);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    if (!otp) {
+      setError('Please enter the OTP.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    try {
+      // ✅ FIX: Must use LOCAL_API — OTP was stored in local server memory
+      await axios.post(`${LOCAL_API}/api/forgot-password/verify-otp`, { email: forgotEmail, otp });
+      setMessage('OTP verified successfully. You can now reset your password.');
+      setForgotStep(3);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Invalid or expired OTP.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    try {
+      // ✅ FIX: Must use LOCAL_API — OTP session lives on local server
+      await axios.post(`${LOCAL_API}/api/forgot-password/reset-password`, { email: forgotEmail, otp, password: newPassword });
+      setMessage('Your password has been updated successfully! Redirecting to login...');
+      setTimeout(() => {
+        setView('login');
+        setMessage('');
+        setError('');
+        navigate('/login', { replace: true });
+      }, 3000);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to reset password.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetState = () => {
+    setError('');
+    setMessage('');
+    setForgotEmail('');
+    setOtp('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setForgotStep(1);
+  }
+
+  const renderForgotPasswordView = () => (
+    <div className="forgot-password-view">
+      {forgotStep === 1 && (
+        <form onSubmit={handleSendOtp}>
+          <h2 className="welcome-title">DineInnPro</h2>
+          <p className="form-subtitle">Enter your email to receive an OTP.</p>
+          <div className="field-group">
+            <label className="field-label">Email Address</label>
+            <input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} className="field-input" placeholder="you@example.com" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Sending...' : 'Send OTP'}</button>
+        </form>
+      )}
+      {forgotStep === 2 && (
+        <form onSubmit={handleVerifyOtp}>
+          <h2 className="welcome-title">Verify OTP</h2>
+          <p className="form-subtitle">Check your email for the 6-digit code.</p>
+          <div className="field-group">
+            <label className="field-label">OTP</label>
+            <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)} className="field-input" placeholder="Enter OTP" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Verifying...' : 'Verify OTP'}</button>
+        </form>
+      )}
+      {forgotStep === 3 && (
+        <form onSubmit={handleResetPassword}>
+          <h2 className="welcome-title">Reset Password</h2>
+          <p className="form-subtitle">Create a new, strong password.</p>
+          <div className="field-group">
+            <label className="field-label">New Password</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="field-input" placeholder="New Password" required />
+          </div>
+          <div className="field-group">
+            <label className="field-label">Confirm Password</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="field-input" placeholder="Confirm Password" required />
+          </div>
+          <button type="submit" className="submit-button" disabled={isLoading}>{isLoading ? 'Resetting...' : 'Reset Password'}</button>
+        </form>
+      )}
+      <button onClick={() => { setView('login'); resetState(); navigate('/login', { replace: true }); }} className="back-to-login-link">
+        Back to Login
+      </button>
+    </div>
+  );
+
+  const renderLoginView = () => (
+    <>
+      <h1 className="welcome-title">Welcome Back</h1>
+      <div className="form-fields">
+        <div className="field-group">
+          <label className="field-label">Restaurant ID *</label>
+          <input type="text" name="restaurantId" value={loginForm.restaurantId} onChange={handleLoginInputChange} placeholder="e.g., pizzahub" className="field-input" required />
+        </div>
+        <div className="field-group">
+          <label className="field-label">Email Address *</label>
+          <input type="email" name="email" value={loginForm.email} onChange={handleLoginInputChange} placeholder="Enter your email" className="field-input" required />
+        </div>
+        <div className="field-group">
+          <label className="field-label">Role *</label>
+          <select name="role" value={loginForm.role} onChange={handleLoginInputChange} className="field-input">
+            {roles.map(role => (<option key={role} value={role}>{role}</option>))}
+          </select>
+        </div>
+        <div className="field-group">
+          <label className="field-label">Password *</label>
+          <input type="password" name="password" value={loginForm.password} onChange={handleLoginInputChange} placeholder="Enter your password" className="field-input" required />
+        </div>
+        <div className="remember-forgot-row">
+          <label className="remember-me-label">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="remember-me-checkbox"
+            />
+            Remember me
+          </label>
+          <button onClick={() => { setView('forgot'); resetState(); }} className="forgot-link">Forgot password?</button>
+        </div>
+        <button onClick={handleLogin} className="submit-button" disabled={isLoading}>
+          {isLoading ? 'Logging In...' : 'Login'}
+        </button>
+      </div>
+      <div className="quick-login">
+        <h3 className="quick-login-title">Quick Demo Login</h3>
+        <div className="quick-login-grid">
+          <button onClick={() => handleQuickLogin('Admin')} className="quick-login-button admin">Login as Admin</button>
+          <button onClick={() => handleQuickLogin('Manager')} className="quick-login-button manager">Login as Manager</button>
+          <button onClick={() => handleQuickLogin('Chef')} className="quick-login-button chef">Login as Chef</button>
+          <button onClick={() => handleQuickLogin('Waiter')} className="quick-login-button waiter">Login as Waiter</button>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <div className="logo-section">
+          <div className="logo-content">
+            <div className="logo-icon"><span>🍽️</span></div>
+            <h2 className="logo-title">DineInnPro</h2>
+            <p className="logo-subtitle">Multi-Restaurant Management System</p>
+          </div>
+        </div>
+        <div className="form-section">
+          {error && <div className="lo-error-message">{error}</div>}
+          {message && <div className="success-message">{message}</div>}
+          {view === 'login' ? renderLoginView() : renderForgotPasswordView()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MultiRestaurantLogin;

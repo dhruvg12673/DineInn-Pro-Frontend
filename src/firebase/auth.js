@@ -1,1 +1,0 @@
-// Firebase auth functions go here 
